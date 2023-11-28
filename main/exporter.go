@@ -36,13 +36,24 @@ func main() {
 	}
 	fmt.Println("Client opened")
 
-  // Airflow valuesgolang
+  // Airflow values
+	fmt.Println()
 	fmt.Printf("SAF: %d RPM\n", systemairmodbus.GetFanSAF_RPM(client))
 	fmt.Printf("EAF: %d RPM\n", systemairmodbus.GetFanEAF_RPM(client))
 	fmt.Printf("SAF: %d %%\n", systemairmodbus.GetFanSAFPercentage(client))
 	fmt.Printf("EAF: %d %%\n", systemairmodbus.GetFanEAFPercentage(client))
 
+	// Misc values
+	fmt.Println()
+	fmt.Printf("Humidity: %d %%\n", systemairmodbus.GetHumidity(client))
+	fmt.Printf("Humidity demand: %d %%\n", systemairmodbus.GetHumidityDemand(client))
+	fmt.Printf("IAQ: %s\n", systemairmodbus.GetIAQ(client))
+	fmt.Printf("Usermode: %s\n", systemairmodbus.GetUsermode(client))
+	fmt.Printf("Usermode remaining: %v\n", systemairmodbus.GetUsermodeRemaining(client))
+	fmt.Printf("Filter remaining: %v\n", systemairmodbus.GetFilterRemaining(client))
+
 	// Temperature values
+	fmt.Println()
 	fmt.Printf("EAT: %.1f C\n", systemairmodbus.GetTempEAT(client))
 	
 	// close the TCP connection/serial port
@@ -58,6 +69,8 @@ func CreateModbusClient(conf *modbus.ClientConfiguration) *modbus.ModbusClient {
 		fmt.Fprintf(os.Stderr, "Modbus client creation failed with error: %v\n", err)
 		os.Exit(2)
 	}
+
+	client.SetEncoding(modbus.BIG_ENDIAN,modbus.LOW_WORD_FIRST)
 
 	return client
 }
