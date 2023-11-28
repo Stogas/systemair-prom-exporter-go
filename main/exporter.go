@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Starting")
+	fmt.Println("Starting Systemair-Prom-Exporter")
 	var err error
 
 	conf := &modbus.ClientConfiguration{
@@ -19,7 +19,7 @@ func main() {
 		DataBits: 8,
 		Parity:   modbus.PARITY_NONE,
 		StopBits: 1,
-		Timeout:  500 * time.Millisecond,
+		Timeout:  2000 * time.Millisecond,
 	}
 
 	client := CreateModbusClient(conf)
@@ -36,11 +36,15 @@ func main() {
 	}
 	fmt.Println("Client opened")
 
-	var eat_temp float32
+  // Airflow valuesgolang
+	fmt.Printf("SAF: %d RPM\n", systemairmodbus.GetFanSAF_RPM(client))
+	fmt.Printf("EAF: %d RPM\n", systemairmodbus.GetFanEAF_RPM(client))
+	fmt.Printf("SAF: %d %%\n", systemairmodbus.GetFanSAFPercentage(client))
+	fmt.Printf("EAF: %d %%\n", systemairmodbus.GetFanEAFPercentage(client))
 
-	eat_temp = systemairmodbus.GetTempEAT(client) / 10
-	fmt.Println("EAT temp: ", eat_temp)
-
+	// Temperature values
+	fmt.Printf("EAT: %.1f C\n", systemairmodbus.GetTempEAT(client))
+	
 	// close the TCP connection/serial port
 	client.Close()
 }
