@@ -54,6 +54,14 @@ func main() {
 
   // Heater values
 	fmt.Println()
+	fmt.Printf("Heat exchanger active: %t\n", systemairmodbus.GetHeatExchangerActive(client)) // hvac_heater_active
+	fmt.Printf("Heat exchanger voltage: %.1f V\n", systemairmodbus.GetHeatExchangerVoltage(client)) // hvac_heater_voltage
+	// TODO: heater & TRIAC correctness is unverified - these two might mean opposite things;
+	// also, I'm not sure what TRIAC means and if it's actually an electric heater
+	fmt.Printf("Electric heater active: %t\n", systemairmodbus.GetHeaterActive(client)) // hvac_heater_active
+	fmt.Printf("Electric heater voltage: %.1f V\n", systemairmodbus.GetHeaterVoltage(client)) // hvac_heater_voltage
+	fmt.Printf("TRIAC Electric heater active: %t\n", systemairmodbus.GetTRIACActive(client)) // hvac_triac_active
+	fmt.Printf("TRIAC Electric heater voltage: %.1f V\n", systemairmodbus.GetTRIACVoltage(client)) // hvac_triac_voltage
 
 	// Temperature values
 	fmt.Println()
