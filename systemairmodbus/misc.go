@@ -8,10 +8,10 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
-// GetHumidity gets the "Sensor value for RH demand control" as a percentage.
+// GetHumidity gets the "PDM RHS sensor value (standard)" as a percentage.
 // Min 0 %, Max 100 %.
 func GetHumidity(client *modbus.ModbusClient) uint16 {
-	return readRegister16(client, 1012, modbus.HOLDING_REGISTER)
+	return readRegister16(client, 12136, modbus.HOLDING_REGISTER)
 }
 
 // GetHumidityDemand gets the "Set point for RH demand control" as a percentage.
