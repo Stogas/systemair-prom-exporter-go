@@ -23,7 +23,7 @@ func main() {
 	}
 
 	client := CreateModbusClient(conf)
-	fmt.Println("Client created")
+	fmt.Println("Modbus client created")
 
 	// now that the client is created and configured, attempt to connect
 	err = client.Open()
@@ -34,8 +34,13 @@ func main() {
 		// the connection succeeds (i.e. err == nil), calling the constructor again
 		// is unnecessary.
 	}
-	fmt.Println("Client opened")
+	defer client.Close()
+	fmt.Println("Modbus client opened")
 
+	printModbusRegisters(client)
+}
+
+func printModbusRegisters(client *modbus.ModbusClient) {
   // Airflow values
 	fmt.Println()
 	fmt.Printf("SAF: %d RPM\n", systemairmodbus.GetFanSAF_RPM(client)) // hvac_fan_speed_rpm{fan='SAF'}
@@ -65,6 +70,10 @@ func main() {
 
 	// Temperature values
 	fmt.Println()
+	fmt.Printf("ECO mode enabled: %t\n", systemairmodbus.GetEcoEnabled(client)) // hvac_eco{state='enabled'}
+	fmt.Printf("ECO mode active: %t\n", systemairmodbus.GetEcoActive(client)) // hvac_eco{state='active'}
+	fmt.Printf("Freecooling enabled: %t \n", systemairmodbus.GetFreecoolingEnabled(client)) // hvac_freecooling{state='enabled'}
+	fmt.Printf("Freecooling active: %t \n", systemairmodbus.GetFreecoolingActive(client)) // hvac_freecooling{state='active'}
 	fmt.Printf("Temp supply mode: %s\n", systemairmodbus.GetTempMode(client)) // hvac_temp_mode_enabled
 	fmt.Printf("SATC controller output: %d %%\n", systemairmodbus.GetTempDemandPercentage(client)) // hvac_temp_controller_percentage
 	fmt.Printf("Target room: %.1f C\n", systemairmodbus.GetTempTargetRoom(client)) // hvac_temp_target_degrees{type='room'}
@@ -73,9 +82,6 @@ func main() {
 	fmt.Printf("SAT: %.1f C\n", systemairmodbus.GetTempSAT(client)) // hvac_temp_degrees{sensor='SAT'}
 	fmt.Printf("EAT: %.1f C\n", systemairmodbus.GetTempEAT(client)) // hvac_temp_degrees{sensor='EAT'}
 	fmt.Printf("OHT: %.1f C\n", systemairmodbus.GetTempOHT(client)) // hvac_temp_degrees{sensor='OHT'}
-	
-	// close the TCP connection/serial port
-	client.Close()
 }
 
 func CreateModbusClient(conf *modbus.ClientConfiguration) *modbus.ModbusClient {

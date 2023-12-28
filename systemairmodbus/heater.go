@@ -66,3 +66,55 @@ func GetHeatExchangerActive(client *modbus.ModbusClient) bool {
 func GetHeatExchangerVoltage(client *modbus.ModbusClient) float32 {
 	return float32(readRegister16(client, 14103, modbus.INPUT_REGISTER)) / 10
 }
+
+// GetEcoEnabled gets the "Enabling of eco mode" as a boolean.
+// This shows whether the ECO mode is enabled by the user.
+func GetEcoEnabled(client *modbus.ModbusClient) bool {
+	switch readRegister16(client, 2505, modbus.HOLDING_REGISTER) {
+	case 0:
+		return false
+	case 1:
+		return true
+	}
+	fmt.Fprintf(os.Stderr, "systemairmodbus.GetEcoEnabled failed to get the status of the ECO mode")
+	return false // I don't want to do proper error handling in this case
+}
+
+// GetEcoActive gets the "Indication if conditions for ECO mode are active (low temperature)" as a boolean.
+// This shows whether the ECO mode is active at this moment.
+func GetEcoActive(client *modbus.ModbusClient) bool {
+	switch readRegister16(client, 2506, modbus.INPUT_REGISTER) {
+	case 0:
+		return false
+	case 1:
+		return true
+	}
+	fmt.Fprintf(os.Stderr, "systemairmodbus.GetEcoActive failed to get the status of the ECO mode")
+	return false // I don't want to do proper error handling in this case
+}
+
+// GetFreecoolingEnabled gets the "if free cooling is enabled" as a boolean.
+// This shows whether the Freecooling mode is enabled by the user.
+func GetFreecoolingEnabled(client *modbus.ModbusClient) bool {
+	switch readRegister16(client, 4101, modbus.HOLDING_REGISTER) {
+	case 0:
+		return false
+	case 1:
+		return true
+	}
+	fmt.Fprintf(os.Stderr, "systemairmodbus.GetFreecoolingEnabled failed to get the status of the Freecooling mode")
+	return false // I don't want to do proper error handling in this case
+}
+
+// GetFreecoolingActive gets the "if free cooling is being performed" as a boolean.
+// This shows whether the Freecooling mode is active at this moment.
+func GetFreecoolingActive(client *modbus.ModbusClient) bool {
+	switch readRegister16(client, 4111, modbus.INPUT_REGISTER) {
+	case 0:
+		return false
+	case 1:
+		return true
+	}
+	fmt.Fprintf(os.Stderr, "systemairmodbus.GetFreecoolingActive failed to get the status of the Freecooling mode")
+	return false // I don't want to do proper error handling in this case
+}
