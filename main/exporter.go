@@ -2,99 +2,91 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"net/http"
+	"sync"
 	"systemair-prom-exporter-go/systemairmodbus"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/simonvetter/modbus"
 )
 
-func main() {
-	fmt.Println("Starting Systemair-Prom-Exporter")
-	var err error
+type SystemairCollector struct {
+	// Ensure only a single Collect() process can take place
+	// Otherwise, we might run into issues with the serial modbus interface
+	mutex sync.Mutex
 
-	conf := &modbus.ClientConfiguration{
-		URL:      "rtu:///dev/ttyUSB0",
-		Speed:    19200,
-		DataBits: 8,
-		Parity:   modbus.PARITY_NONE,
-		StopBits: 1,
-		Timeout:  2000 * time.Millisecond,
-	}
+	// ModbusClient which we will target for systemair-prom-exporter-go/systemairmodbus functions
+	hvac *modbus.ModbusClient
 
-	client := CreateModbusClient(conf)
-	fmt.Println("Modbus client created")
-
-	// now that the client is created and configured, attempt to connect
-	err = client.Open()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Modbus client Open() failed with error: %v\n", err)
-		os.Exit(2)
-		// note: multiple Open() attempts can be made on the same client until
-		// the connection succeeds (i.e. err == nil), calling the constructor again
-		// is unnecessary.
-	}
-	defer client.Close()
-	fmt.Println("Modbus client opened")
-
-	printModbusRegisters(client)
+	// Metrics for each library function
+	temp_controller_percentage prometheus.Gauge
 }
 
-func printModbusRegisters(client *modbus.ModbusClient) {
-  // Airflow values
-	fmt.Println()
-	fmt.Printf("SAF: %d RPM\n", systemairmodbus.GetFanSAF_RPM(client)) // hvac_fan_speed_rpm{fan='SAF'}
-	fmt.Printf("EAF: %d RPM\n", systemairmodbus.GetFanEAF_RPM(client))// hvac_fan_speed_rpm{fan='EAF'}
-	fmt.Printf("SAF: %d %%\n", systemairmodbus.GetFanSAFPercentage(client)) // hvac_fan_speed_percentage{fan='SAF'}
-	fmt.Printf("EAF: %d %%\n", systemairmodbus.GetFanEAFPercentage(client)) // hvac_fan_speed_percentage{fan='EAF'}
-
-	// Misc values
-	fmt.Println()
-	fmt.Printf("Humidity: %d %%\n", systemairmodbus.GetHumidity(client)) // hvac_humidity_percentage{type='sensor'}
-	fmt.Printf("Humidity demand: %d %%\n", systemairmodbus.GetHumidityDemand(client)) // hvac_humidity_percentage{type='demand'}
-	fmt.Printf("IAQ: %s\n", systemairmodbus.GetIAQ(client)) // hvac_iaq_level{level='<result>'}=1
-	fmt.Printf("Usermode: %s\n", systemairmodbus.GetUsermode(client)) // hvac_usermode_enabled{mode='<result>'}=1
-	fmt.Printf("Usermode remaining: %v\n", systemairmodbus.GetUsermodeRemaining(client))
-	fmt.Printf("Filter remaining: %v\n", systemairmodbus.GetFilterRemaining(client)) // hvac_airfilter_remaining_seconds
-
-  // Heater values
-	fmt.Println()
-	fmt.Printf("Heat exchanger active: %t\n", systemairmodbus.GetHeatExchangerActive(client)) // hvac_heater_active
-	fmt.Printf("Heat exchanger voltage: %.1f V\n", systemairmodbus.GetHeatExchangerVoltage(client)) // hvac_heater_voltage
-	// TODO: heater & TRIAC correctness is unverified - these two might mean opposite things;
-	// also, I'm not sure what TRIAC means and if it's actually an electric heater
-	fmt.Printf("Electric heater active: %t\n", systemairmodbus.GetHeaterActive(client)) // hvac_heater_active
-	fmt.Printf("Electric heater voltage: %.1f V\n", systemairmodbus.GetHeaterVoltage(client)) // hvac_heater_voltage
-	fmt.Printf("TRIAC Electric heater active: %t\n", systemairmodbus.GetTRIACActive(client)) // hvac_triac_active
-	fmt.Printf("TRIAC Electric heater voltage: %.1f V\n", systemairmodbus.GetTRIACVoltage(client)) // hvac_triac_voltage
-
-	// Temperature values
-	fmt.Println()
-	fmt.Printf("ECO mode enabled: %t\n", systemairmodbus.GetEcoEnabled(client)) // hvac_eco{state='enabled'}
-	fmt.Printf("ECO mode active: %t\n", systemairmodbus.GetEcoActive(client)) // hvac_eco{state='active'}
-	fmt.Printf("Freecooling enabled: %t \n", systemairmodbus.GetFreecoolingEnabled(client)) // hvac_freecooling{state='enabled'}
-	fmt.Printf("Freecooling active: %t \n", systemairmodbus.GetFreecoolingActive(client)) // hvac_freecooling{state='active'}
-	fmt.Printf("Temp supply mode: %s\n", systemairmodbus.GetTempMode(client)) // hvac_temp_mode_enabled
-	fmt.Printf("SATC controller output: %d %%\n", systemairmodbus.GetTempDemandPercentage(client)) // hvac_temp_controller_percentage
-	fmt.Printf("Target room: %.1f C\n", systemairmodbus.GetTempTargetRoom(client)) // hvac_temp_target_degrees{type='room'}
-	fmt.Printf("Target supply: %.1f C\n", systemairmodbus.GetTempTargetSupply(client)) // hvac_temp_target_degrees{type='supply'}
-	fmt.Printf("OAT: %.1f C\n", systemairmodbus.GetTempOAT(client)) // hvac_temp_degrees{sensor='OAT'}
-	fmt.Printf("SAT: %.1f C\n", systemairmodbus.GetTempSAT(client)) // hvac_temp_degrees{sensor='SAT'}
-	fmt.Printf("EAT: %.1f C\n", systemairmodbus.GetTempEAT(client)) // hvac_temp_degrees{sensor='EAT'}
-	fmt.Printf("OHT: %.1f C\n", systemairmodbus.GetTempOHT(client)) // hvac_temp_degrees{sensor='OHT'}
+func NewSystemairCollector(hvac *modbus.ModbusClient) *SystemairCollector {
+	return &SystemairCollector{
+		hvac: hvac,
+		temp_controller_percentage: prometheus.NewGauge(prometheus.GaugeOpts{
+					Name: "hvac_temp_controller_percentage",
+					Help: "\"Output of the SATC\" in percentage. Min 0, Max 100",
+			}),
+	}
 }
 
-func CreateModbusClient(conf *modbus.ClientConfiguration) *modbus.ModbusClient {
-	var client  *modbus.ModbusClient
-	var err      error
+func (e *SystemairCollector) Describe(ch chan<- *prometheus.Desc) {
+	// Register all metrics with Prometheus
+	e.temp_controller_percentage.Describe(ch)
+}
 
-	client, err = modbus.NewClient(conf)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Modbus client creation failed with error: %v\n", err)
-		os.Exit(2)
+func (e *SystemairCollector) Collect(ch chan<- prometheus.Metric) {
+	e.mutex.Lock() // Ensure a single collection at a time
+	defer e.mutex.Unlock()
+
+	// Call your library's functions sequentially and set the metrics
+	valueA := systemairmodbus.GetTempDemandPercentage(e.hvac) // Assume this returns a uint16
+	e.temp_controller_percentage.Set(float64(valueA))
+
+	// Collect metrics to Prometheus
+	e.temp_controller_percentage.Collect(ch)
+}
+
+// StartExporter, given an address and path, creates a Prometheus Collector,
+//   registers it to the default Prometheus Registerer,
+//   registers a Prometheus HTTP handler,
+//   and starts an HTTP server.
+func StartExporter(addr string, path string, hvac *modbus.ModbusClient) {
+	collector := NewSystemairCollector(hvac)
+	prometheus.MustRegister(collector)
+
+	http.Handle(path, promhttp.Handler())
+
+	// Create a channel to communicate with the goroutine.
+	errChan := make(chan error)
+
+	// Start the HTTP server in a new goroutine.
+	go func() {
+			// ListenAndServe always returns a non-nil error.
+			err := http.ListenAndServe(addr, nil)
+			if err != nil {
+					// Send any errors back through the channel.
+					errChan <- err
+			}
+	}()
+
+	// Give the server a moment to start.
+	time.Sleep(100 * time.Millisecond)
+
+	// Check if there was an error starting the server.
+	select {
+	case err := <-errChan:
+			// Handle the error, e.g., log it or exit.
+			fmt.Println("Failed to start HTTP listener:", err)
+	default:
+			// If no error, server started successfully.
+			fmt.Printf("HTTP listener is successfully serving on: %v\n", addr + path)
 	}
 
-	client.SetEncoding(modbus.BIG_ENDIAN,modbus.LOW_WORD_FIRST)
-
-	return client
+	// Keep the main goroutine alive indefinitely.
+	select {}
 }
