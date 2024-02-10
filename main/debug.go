@@ -43,10 +43,10 @@ func PrintModbusRegisters(client *modbus.ModbusClient) {
 	fmt.Printf("Freecooling active: %t \n", systemairmodbus.GetFreecoolingActive(client)) // hvac_freecooling{state='active'}
 	fmt.Printf("Temp supply mode: %s\n", systemairmodbus.GetTempMode(client)) // hvac_temp_mode_enabled
 	fmt.Printf("SATC controller output: %d %%\n", systemairmodbus.GetTempDemandPercentage(client)) // hvac_temp_controller_percentage
-	fmt.Printf("Target room: %.1f C\n", systemairmodbus.GetTempTargetRoom(client)) // hvac_temp_target_degrees{type='room'}
-	fmt.Printf("Target supply: %.1f C\n", systemairmodbus.GetTempTargetSupply(client)) // hvac_temp_target_degrees{type='supply'}
-	fmt.Printf("OAT: %.1f C\n", systemairmodbus.GetTempOAT(client)) // hvac_temp_degrees{sensor='OAT'}
-	fmt.Printf("SAT: %.1f C\n", systemairmodbus.GetTempSAT(client)) // hvac_temp_degrees{sensor='SAT'}
-	fmt.Printf("EAT: %.1f C\n", systemairmodbus.GetTempEAT(client)) // hvac_temp_degrees{sensor='EAT'}
-	fmt.Printf("OHT: %.1f C\n", systemairmodbus.GetTempOHT(client)) // hvac_temp_degrees{sensor='OHT'}
+	fmt.Printf("Target room: %.1f C\n", systemairmodbus.GetTempTarget(client, "room")) // hvac_temp_target_degrees{type='room'}
+	fmt.Printf("Target supply: %.1f C\n", systemairmodbus.GetTempTarget(client, "supply")) // hvac_temp_target_degrees{type='supply'}
+	fmt.Printf("OAT: %.1f C\n", systemairmodbus.GetTemp(client, "OAT")) // hvac_temp_degrees{sensor='OAT'}
+	fmt.Printf("SAT: %.1f C\n", systemairmodbus.GetTemp(client, "SAT")) // hvac_temp_degrees{sensor='SAT'}
+	fmt.Printf("EAT: %.1f C\n", systemairmodbus.GetTemp(client, "EAT")) // hvac_temp_degrees{sensor='EAT'}
+	fmt.Printf("OHT: %.1f C\n", systemairmodbus.GetTemp(client, "OHT")) // hvac_temp_degrees{sensor='OHT'}
 }

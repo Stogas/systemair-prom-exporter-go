@@ -1,33 +1,27 @@
 package systemairmodbus
 
-import "github.com/simonvetter/modbus"
+import (
+	"github.com/simonvetter/modbus"
+)
 
-// GetTempOAT gets the "Outdoor Air Temperature sensor value (standard)".
-// This is the Outdoor Air Temperature in Celsius.
+// GetTemp gets the Temperature Sensor values in Celsius, based on the supplied sensor name.
+// OAT is the Outdoor Air Temperature.
+// SAT is the Supply Air Temperature.
+// EAT is the Extract Air Temperature.
+// OHT is the Over Heat Temperature.
 // Min -40 C, Max 80 C
-func GetTempOAT(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 12102, modbus.HOLDING_REGISTER)) / 10
-}
-
-// GetTempSAT gets the "Supply Air Temperature sensor value (standard)".
-// This is the Supply Air Temperature in Celsius.
-// Min -40 C, Max 80 C
-func GetTempSAT(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 12103, modbus.HOLDING_REGISTER)) / 10
-}
-
-// GetTempEAT gets the "PDM EAT sensor value (standard)".
-// This is the Extract Air Temperature in Celsius.
-// Min -40 C, Max 80 C
-func GetTempEAT(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 12544, modbus.HOLDING_REGISTER)) / 10
-}
-
-// GetTempOHT gets the "Over Heat Temperature sensor (Electrical Heater)".
-// This is the Over Heat Temperature in Celsius.
-// Min -40 C, Max 80 C
-func GetTempOHT(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 12108, modbus.HOLDING_REGISTER)) / 10
+func GetTemp(client *modbus.ModbusClient, sensor string) float64 {
+	switch sensor {
+	case "OAT":
+		return float64(readRegister16(client, 12102, modbus.HOLDING_REGISTER)) / 10
+	case "SAT":
+		return float64(readRegister16(client, 12103, modbus.HOLDING_REGISTER)) / 10
+	case "EAT":
+		return float64(readRegister16(client, 12544, modbus.HOLDING_REGISTER)) / 10
+	case "OHT":
+		return float64(readRegister16(client, 12108, modbus.HOLDING_REGISTER)) / 10
+	}
+	return -255
 }
 
 // GetTempMode gets the "Unit temperature control mode" as a string.
@@ -54,16 +48,17 @@ func GetTempDemandPercentage(client *modbus.ModbusClient) uint16 {
 	return readRegister16(client, 2055, modbus.INPUT_REGISTER)
 }
 
-// GetTempTargetRoom gets the "Temperature setpoint for the supply air temperature".
-// This is the Target Room Temperature in Celsius.
+// GetTempTarget gets the target temperatures for the chosen target type:
+// room - target for the sensor used for "Temperature Control Mode", most commonly the room/extract temperature
+// supply - target supply temperature the unit wants to use to get closer to the target "room" temperature
+// Note: The target supply temperature might not be achieved, depending on the unit's configuration
 // Min 12 C, Max 30 C
-func GetTempTargetRoom(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 2001, modbus.HOLDING_REGISTER)) / 10
-}
-
-// GetTempTargetSupply gets the "Temperature setpoint for the supply air temperature".
-// This is the Target Supply Temperature in Celsius.
-// Min 12 C, Max 30 C
-func GetTempTargetSupply(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 2054, modbus.INPUT_REGISTER)) / 10
+func GetTempTarget(client *modbus.ModbusClient, target string) float64 {
+	switch target {
+	case "room":
+		return float64(readRegister16(client, 2001, modbus.HOLDING_REGISTER)) / 10
+	case "supply":
+		return float64(readRegister16(client, 2054, modbus.INPUT_REGISTER)) / 10
+	}
+	return -255
 }
