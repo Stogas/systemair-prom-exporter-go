@@ -15,7 +15,7 @@ import (
 //   registers a Prometheus HTTP handler,
 //   and starts an HTTP server.
 func StartExporter(addr string, path string, hvac *modbus.ModbusClient) {
-	collector := NewSystemairCollector(hvac)
+	collector := NewSystemairCollector(hvac, "hvac")
 	prometheus.MustRegister(collector)
 
 	http.Handle(path, promhttp.Handler())
