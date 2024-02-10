@@ -24,5 +24,5 @@ func main() {
 
 	PrintModbusRegisters(client)
 
-	StartExporter(":2112", "/metrics", client)
+	StartExporter(":9999", "/metrics", client)
 }

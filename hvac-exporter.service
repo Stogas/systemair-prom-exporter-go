@@ -1,0 +1,9 @@
+[Unit]
+Description=SystemAir HVAC metrics prometheus exporter
+After=multi-user.target
+[Service]
+Type=simple
+Restart=always
+ExecStart=/opt/systemair-exporter
+[Install]
+WantedBy=multi-user.target
