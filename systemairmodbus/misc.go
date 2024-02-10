@@ -8,16 +8,17 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
-// GetHumidity gets the "PDM RHS sensor value (standard)" as a percentage.
+// GetHumidity gets the "PDM RHS sensor value (standard)" and "Set point for RH demand control" as a percentage.
+// To select the value, provide "sensor" or "demand" as the 'source' value
 // Min 0 %, Max 100 %.
-func GetHumidity(client *modbus.ModbusClient) uint16 {
-	return readRegister16(client, 12136, modbus.HOLDING_REGISTER)
-}
-
-// GetHumidityDemand gets the "Set point for RH demand control" as a percentage.
-// Min 0 %, Max 100 %.
-func GetHumidityDemand(client *modbus.ModbusClient) uint16 {
-	return readRegister16(client, 1011, modbus.HOLDING_REGISTER)
+func GetHumidity(client *modbus.ModbusClient, source string) uint16 {
+	switch source {
+	case "sensor":
+		return readRegister16(client, 12136, modbus.HOLDING_REGISTER)
+	case "demand":
+		return readRegister16(client, 1011, modbus.HOLDING_REGISTER)
+	}
+	return 0
 }
 
 // GetIAQ gets the "Actual IAQ level" as a string.
@@ -47,8 +48,8 @@ func GetIAQ(client *modbus.ModbusClient) string {
 // 4 - Fireplace
 // 5 - Away
 // 6 - Holiday
-// 7 - Cooker hood
-// 8 - Vacuum Cleaner
+// 7 - CookerHood
+// 8 - VacuumCleaner
 // 9 - CDI1
 // 10 - CDI2
 // 11 - CDI3
@@ -71,9 +72,9 @@ func GetUsermode(client *modbus.ModbusClient) string {
 	case 6:
 		return "Holiday"
 	case 7:
-		return "Cooker hood"
+		return "CookerHood"
 	case 8:
-		return "Vacuum Cleaner"
+		return "VacuumCleaner"
 	case 9:
 		return "CDI1"
 	case 10:

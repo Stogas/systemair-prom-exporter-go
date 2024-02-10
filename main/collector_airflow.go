@@ -40,7 +40,7 @@ func (e *SystemairAirflowCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (e *SystemairAirflowCollector) Collect(ch chan<- prometheus.Metric) {
-	for _, fan := range []string{"SAF", "EAF"}{
+	for _, fan := range []string{"SAF", "EAF"} {
 		e.fan_speed_rpm.WithLabelValues(fan).Set(float64(systemairmodbus.GetFanRPM(e.hvac, fan)))
 		e.fan_speed_percentage.WithLabelValues(fan).Set(float64(systemairmodbus.GetFanPercentage(e.hvac, fan)))
 	}

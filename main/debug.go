@@ -17,11 +17,11 @@ func PrintModbusRegisters(client *modbus.ModbusClient) {
 
 	// Misc values
 	fmt.Println()
-	fmt.Printf("Humidity: %d %%\n", systemairmodbus.GetHumidity(client)) // hvac_humidity_percentage{type='sensor'}
-	fmt.Printf("Humidity demand: %d %%\n", systemairmodbus.GetHumidityDemand(client)) // hvac_humidity_percentage{type='demand'}
+	fmt.Printf("Humidity: %d %%\n", systemairmodbus.GetHumidity(client, "sensor")) // hvac_humidity_percentage{type='sensor'}
+	fmt.Printf("Humidity demand: %d %%\n", systemairmodbus.GetHumidity(client, "demand")) // hvac_humidity_percentage{type='demand'}
 	fmt.Printf("IAQ: %s\n", systemairmodbus.GetIAQ(client)) // hvac_iaq_level{level='<result>'}=1
 	fmt.Printf("Usermode: %s\n", systemairmodbus.GetUsermode(client)) // hvac_usermode_enabled{mode='<result>'}=1
-	fmt.Printf("Usermode remaining: %v\n", systemairmodbus.GetUsermodeRemaining(client))
+	fmt.Printf("Usermode remaining: %v\n", systemairmodbus.GetUsermodeRemaining(client)) // hvac_usermode_remaining_seconds
 	fmt.Printf("Filter remaining: %v\n", systemairmodbus.GetFilterRemaining(client)) // hvac_airfilter_remaining_seconds
 
   // Heater values
