@@ -10,10 +10,10 @@ import (
 func PrintModbusRegisters(client *modbus.ModbusClient) {
   // Airflow values
 	fmt.Println()
-	fmt.Printf("SAF: %d RPM\n", systemairmodbus.GetFanSAF_RPM(client)) // hvac_fan_speed_rpm{fan='SAF'}
-	fmt.Printf("EAF: %d RPM\n", systemairmodbus.GetFanEAF_RPM(client))// hvac_fan_speed_rpm{fan='EAF'}
-	fmt.Printf("SAF: %d %%\n", systemairmodbus.GetFanSAFPercentage(client)) // hvac_fan_speed_percentage{fan='SAF'}
-	fmt.Printf("EAF: %d %%\n", systemairmodbus.GetFanEAFPercentage(client)) // hvac_fan_speed_percentage{fan='EAF'}
+	fmt.Printf("SAF: %d RPM\n", systemairmodbus.GetFanRPM(client, "SAF")) // hvac_fan_speed_rpm{fan='SAF'}
+	fmt.Printf("EAF: %d RPM\n", systemairmodbus.GetFanRPM(client, "EAF"))// hvac_fan_speed_rpm{fan='EAF'}
+	fmt.Printf("SAF: %d %%\n", systemairmodbus.GetFanPercentage(client, "SAF")) // hvac_fan_speed_percentage{fan='SAF'}
+	fmt.Printf("EAF: %d %%\n", systemairmodbus.GetFanPercentage(client, "EAF")) // hvac_fan_speed_percentage{fan='EAF'}
 
 	// Misc values
 	fmt.Println()

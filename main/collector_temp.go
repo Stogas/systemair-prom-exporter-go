@@ -8,7 +8,7 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
-type SystemairCollector struct {
+type SystemairTempCollector struct {
 	// ModbusClient which we will target for systemair-prom-exporter-go/systemairmodbus functions
 	hvac *modbus.ModbusClient
 
@@ -18,16 +18,16 @@ type SystemairCollector struct {
 	temp_controller_percentage prometheus.Gauge
 }
 
-func NewSystemairCollector(hvac *modbus.ModbusClient, namespace string) *SystemairCollector {
+func NewSystemairTempCollector(hvac *modbus.ModbusClient, namespace string) *SystemairTempCollector {
 	subsystem := "temp"
-	return &SystemairCollector{
+	return &SystemairTempCollector{
 		hvac: hvac,
 		temp_mode_enabled: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-					Namespace: namespace,
-					Subsystem: subsystem,
-					Name: "mode_enabled",
-					Help: "Unit temperature control mode. The currently enabled mode has a value of 1",
-			}, []string{"mode"}),
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name: "mode_enabled",
+				Help: "Unit temperature control mode. The currently enabled mode has a value of 1",
+		}, []string{"mode"}),
 		temp_degrees: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 				Namespace: namespace,
 				Subsystem: subsystem,
@@ -41,15 +41,15 @@ func NewSystemairCollector(hvac *modbus.ModbusClient, namespace string) *Systema
 				Help: "Target Celsius temperatures for the \"room\" (selected temperature control mode) and the \"supply\" (to achieve the \"room\" temperature). Min 12 C, Max 30 C",
 		}, []string{"type"}),
 		temp_controller_percentage: prometheus.NewGauge(prometheus.GaugeOpts{
-					Namespace: namespace,
-					Subsystem: subsystem,
-					Name: "controller_percentage",
-					Help: "\"Output of the SATC\" in percentage. Min 0, Max 100",
-			}),
+				Namespace: namespace,
+				Subsystem: subsystem,
+				Name: "controller_percentage",
+				Help: "\"Output of the SATC\" in percentage. Min 0, Max 100",
+		}),
 	}
 }
 
-func (e *SystemairCollector) Describe(ch chan<- *prometheus.Desc) {
+func (e *SystemairTempCollector) Describe(ch chan<- *prometheus.Desc) {
 	// Register all metrics with Prometheus
 	e.temp_mode_enabled.Describe(ch)
 	e.temp_degrees.Describe(ch)
@@ -57,7 +57,7 @@ func (e *SystemairCollector) Describe(ch chan<- *prometheus.Desc) {
 	e.temp_controller_percentage.Describe(ch)
 }
 
-func (e *SystemairCollector) Collect(ch chan<- prometheus.Metric) {
+func (e *SystemairTempCollector) Collect(ch chan<- prometheus.Metric) {
 	for _, mode := range []string{"supply", "room", "extract"} {
 		e.temp_mode_enabled.WithLabelValues(mode).Set(0)
 	}

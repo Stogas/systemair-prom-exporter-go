@@ -10,13 +10,15 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
-// StartExporter, given an address and path, creates a Prometheus Collector,
-//   registers it to the default Prometheus Registerer,
+// StartExporter, given an address and path, creates Prometheus Collectors,
+//   registers the to the default Prometheus Registerer,
 //   registers a Prometheus HTTP handler,
 //   and starts an HTTP server.
-func StartExporter(addr string, path string, hvac *modbus.ModbusClient) {
-	collector := NewSystemairCollector(hvac, "hvac")
-	prometheus.MustRegister(collector)
+func StartExporter(addr string, path string, m *modbus.ModbusClient) {
+	collectorTemp := NewSystemairTempCollector(m, "hvac")
+	prometheus.MustRegister(collectorTemp)
+	collectorAirflow := NewSystemairAirflowCollector(m, "hvac")
+	prometheus.MustRegister(collectorAirflow)
 
 	http.Handle(path, promhttp.Handler())
 

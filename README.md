@@ -17,3 +17,13 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 
 - Exit code of `2` signals Modbus related issues
 - Exit code of `3` signals Prometheus exporter related issues
+
+#### TODO
+
+- Do not hardcode `hvac_` metric namespace prefix
+- Do not hardcode port `2112`
+- Do not hardcode HTTP metrics path `/metrics`
+- Allow enabling/disabling specific metric subsystems (`temp`, etc.)
+- Refactor file structure to abide by best practices
+- Implement better error handling (some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, or nothing)
+- Implement structured logging
