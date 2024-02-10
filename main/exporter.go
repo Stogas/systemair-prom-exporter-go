@@ -19,6 +19,8 @@ func StartExporter(addr string, path string, m *modbus.ModbusClient) {
 	prometheus.MustRegister(collectorTemp)
 	collectorAirflow := NewSystemairAirflowCollector(m, "hvac")
 	prometheus.MustRegister(collectorAirflow)
+	collectorHeater := NewSystemairHeaterCollector(m, "hvac")
+	prometheus.MustRegister(collectorHeater)
 
 	http.Handle(path, promhttp.Handler())
 

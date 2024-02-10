@@ -35,7 +35,6 @@ func NewSystemairAirflowCollector(hvac *modbus.ModbusClient, namespace string) *
 }
 
 func (e *SystemairAirflowCollector) Describe(ch chan<- *prometheus.Desc) {
-	// Register all metrics with Prometheus
 	e.fan_speed_rpm.Describe(ch)
 	e.fan_speed_percentage.Describe(ch)
 }

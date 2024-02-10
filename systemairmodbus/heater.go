@@ -23,8 +23,8 @@ func GetHeaterActive(client *modbus.ModbusClient) bool {
 // GetHeaterVoltage gets the "Heater AO state".
 // This is the Voltage applied to the Electric Heater.
 // Min 0 V, Max 10 V
-func GetHeaterVoltage(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 14101, modbus.INPUT_REGISTER)) / 10
+func GetHeaterVoltage(client *modbus.ModbusClient) float64 {
+	return float64(readRegister16(client, 14101, modbus.INPUT_REGISTER)) / 10
 }
 
 // GetTRIACActive gets the "TRIAC control signal" as a boolean.
@@ -43,8 +43,8 @@ func GetTRIACActive(client *modbus.ModbusClient) bool {
 // GetTRIACVoltage gets the "TRIAC after manual override".
 // This is the Voltage applied to the TRIAC Electric Heater.
 // Min 0 V, Max 10 V
-func GetTRIACVoltage(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 2149, modbus.INPUT_REGISTER)) / 10
+func GetTRIACVoltage(client *modbus.ModbusClient) float64 {
+	return float64(readRegister16(client, 2149, modbus.INPUT_REGISTER)) / 10
 }
 
 // GetHeatExchangerActive gets the "TRIAC control signal" as a boolean.
@@ -63,8 +63,8 @@ func GetHeatExchangerActive(client *modbus.ModbusClient) bool {
 // GetHeatExchangerVoltage gets the "Heat Exchanger AO state".
 // This is the Voltage applied to the Heat Exchanger.
 // Min 0 V, Max 10 V
-func GetHeatExchangerVoltage(client *modbus.ModbusClient) float32 {
-	return float32(readRegister16(client, 14103, modbus.INPUT_REGISTER)) / 10
+func GetHeatExchangerVoltage(client *modbus.ModbusClient) float64 {
+	return float64(readRegister16(client, 14103, modbus.INPUT_REGISTER)) / 10
 }
 
 // GetEcoEnabled gets the "Enabling of eco mode" as a boolean.

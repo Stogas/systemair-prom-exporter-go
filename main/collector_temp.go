@@ -50,7 +50,6 @@ func NewSystemairTempCollector(hvac *modbus.ModbusClient, namespace string) *Sys
 }
 
 func (e *SystemairTempCollector) Describe(ch chan<- *prometheus.Desc) {
-	// Register all metrics with Prometheus
 	e.temp_mode_enabled.Describe(ch)
 	e.temp_degrees.Describe(ch)
 	e.temp_target_degrees.Describe(ch)
@@ -65,7 +64,7 @@ func (e *SystemairTempCollector) Collect(ch chan<- prometheus.Metric) {
 	e.temp_mode_enabled.Collect(ch)
 
 	for _, sensor := range []string{"OAT", "SAT", "EAT", "OHT"}{
-		e.temp_degrees.WithLabelValues(sensor).Set(float64(systemairmodbus.GetTemp(e.hvac, sensor)))
+		e.temp_degrees.WithLabelValues(sensor).Set(systemairmodbus.GetTemp(e.hvac, sensor))
 	}
 	e.temp_degrees.Collect(ch)
 
