@@ -1,7 +1,7 @@
 package main
 
 import (
-	"systemair-prom-exporter-go/pkg/systemairmodbus"
+	"github.com/Stogas/systemair-prom-exporter-go/pkg/systemairmodbus"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/simonvetter/modbus"

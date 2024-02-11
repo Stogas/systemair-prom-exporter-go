@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"systemair-prom-exporter-go/pkg/systemairmodbus"
 	"time"
+
+	"github.com/Stogas/systemair-prom-exporter-go/pkg/systemairmodbus"
 
 	"github.com/simonvetter/modbus"
 )

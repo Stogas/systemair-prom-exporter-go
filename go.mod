@@ -1,4 +1,4 @@
-module systemair-prom-exporter-go
+module github.com/Stogas/systemair-prom-exporter-go
 
 go 1.21.4
 
