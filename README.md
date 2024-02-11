@@ -21,7 +21,7 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 #### TODO
 
 - Do not hardcode `hvac_` metric namespace prefix
-- Do not hardcode port `2112`
+- Do not hardcode port `9999`
 - Do not hardcode HTTP metrics path `/metrics`
 - Allow enabling/disabling specific metric subsystems (`temp`, etc.)
 - Refactor file structure to abide by best practices
@@ -29,6 +29,5 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
    - Some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, or nothing)
 	 - The lowest-level read functions for Modbus in `systemairmodbus/readRegisters.go` crash the app on any error
 - Implement structured logging
-- Add a new metric to include the remaining time for the current user mode (via `GetUsermodeRemaining()`)
 - Expand functionality to include write capabilities (I want to enable refresh mode based on external decisions)
 - Expand functionality to include metrics monitoring and auto-enable refresh mode when a spike in humidity is detected
