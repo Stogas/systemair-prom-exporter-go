@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,32 +25,9 @@ func StartExporter(addr string, path string, m *modbus.ModbusClient) {
 
 	http.Handle(path, promhttp.Handler())
 
-	// Create a channel to communicate with the goroutine.
-	errChan := make(chan error)
-
-	// Start the HTTP server in a new goroutine.
-	go func() {
-			// ListenAndServe always returns a non-nil error.
-			err := http.ListenAndServe(addr, nil)
-			if err != nil {
-					// Send any errors back through the channel.
-					errChan <- err
-			}
-	}()
-
-	// Give the server a moment to start.
-	time.Sleep(100 * time.Millisecond)
-
-	// Check if there was an error starting the server.
-	select {
-	case err := <-errChan:
-			// Handle the error, e.g., log it or exit.
-			fmt.Println("Failed to start HTTP listener:", err)
-	default:
-			// If no error, server started successfully.
-			fmt.Printf("HTTP listener is successfully serving on: %v\n", addr + path)
+	fmt.Printf("Starting HTTP listener on: %v\n", addr + path)
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		fmt.Printf("HTTP listener returned error: %v\n", err)
 	}
-
-	// Keep the main goroutine alive indefinitely.
-	select {}
 }
