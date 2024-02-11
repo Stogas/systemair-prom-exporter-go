@@ -23,6 +23,7 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 - Do not hardcode `hvac_` metric namespace prefix
 - Do not hardcode port `9999`
 - Do not hardcode HTTP metrics path `/metrics`
+- Do not hardcode modbus config, including using `/dev/ttyUSB0` as the modbus parget path, speed, etc.
 - Allow enabling/disabling specific metric subsystems (`temp`, etc.)
 - Implement better error handling
    - Some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, or nothing)
