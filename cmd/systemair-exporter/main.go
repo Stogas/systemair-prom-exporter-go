@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"systemair-prom-exporter-go/pkg/systemairmodbus"
 	"time"
 
 	"github.com/simonvetter/modbus"
@@ -19,10 +20,10 @@ func main() {
 		StopBits: 1,
 		Timeout:  2000 * time.Millisecond,
 	}
-	client := CreateAndOpenModbusClient(conf)
+	client := systemairmodbus.CreateAndOpenModbusClient(conf)
 	defer client.Close()
 
-	PrintModbusRegisters(client)
+	systemairmodbus.PrintModbusRegisters(client)
 
 	StartExporter(":9999", "/metrics", client)
 }
