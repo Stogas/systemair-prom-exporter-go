@@ -24,7 +24,6 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 - Do not hardcode port `9999`
 - Do not hardcode HTTP metrics path `/metrics`
 - Allow enabling/disabling specific metric subsystems (`temp`, etc.)
-- Refactor file structure to abide by best practices
 - Implement better error handling
    - Some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, or nothing)
 	 - The lowest-level read functions for Modbus in `systemairmodbus/readRegisters.go` crash the app on any error
