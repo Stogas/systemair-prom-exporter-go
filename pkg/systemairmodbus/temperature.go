@@ -13,13 +13,13 @@ import (
 func GetTemp(client *modbus.ModbusClient, sensor string) float64 {
 	switch sensor {
 	case "OAT":
-		return float64(readRegister16(client, 12102, modbus.HOLDING_REGISTER)) / 10
+		return float64(readRegister16Signed(client, 12102, modbus.HOLDING_REGISTER)) / 10
 	case "SAT":
-		return float64(readRegister16(client, 12103, modbus.HOLDING_REGISTER)) / 10
+		return float64(readRegister16Signed(client, 12103, modbus.HOLDING_REGISTER)) / 10
 	case "EAT":
 		return float64(readRegister16(client, 12544, modbus.HOLDING_REGISTER)) / 10
 	case "OHT":
-		return float64(readRegister16(client, 12108, modbus.HOLDING_REGISTER)) / 10
+		return float64(readRegister16Signed(client, 12108, modbus.HOLDING_REGISTER)) / 10
 	}
 	return -255
 }
