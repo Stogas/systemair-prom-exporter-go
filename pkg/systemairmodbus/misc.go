@@ -1,6 +1,7 @@
 package systemairmodbus
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -85,6 +86,16 @@ func GetUsermode(client *modbus.ModbusClient) string {
 		return "PressureGuard"
 	}
 	return "Error"
+}
+
+// ActivateRefresh enables the "Refresh" user mode with the supplied duration, in minutes.
+func ActivateRefresh(client *modbus.ModbusClient, duration uint16) error {
+	if duration > 240 {
+		return errors.New("supplied refresh mode duration is too big, max 240min")
+	}
+	writeRegister16(client, 1104, duration)
+	writeRegister16(client, 1162, 4) // modes are shifted +1 when writing
+	return nil
 }
 
 // GetUsermodeRemaining gets the "Remaining time for user mode state" as time.Duration.
