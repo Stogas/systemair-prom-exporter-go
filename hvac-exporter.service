@@ -1,9 +1,14 @@
 [Unit]
 Description=SystemAir HVAC metrics prometheus exporter
 After=multi-user.target
+StartLimitIntervalSec=0
+StartLimitBurst=0
+StartLimitIntervalSec=30
+StartLimitBurst=5
 [Service]
 Type=simple
 Restart=always
 ExecStart=/opt/systemair-exporter --humidityMonitoring --averagePeriod 30
+RestartSec=5
 [Install]
 WantedBy=multi-user.target
