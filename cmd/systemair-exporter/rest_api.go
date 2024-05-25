@@ -9,13 +9,12 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
-func StartAPI(addr string, cfg Config, m *modbus.ModbusClient) {
+func RegisterAPI(cfg Config, m *modbus.ModbusClient) {
 	http.HandleFunc("/hvac/status", getStatusHandler(m))
-	http.HandleFunc("/hvac/mode", setModeHandler(m))
+	fmt.Printf("Registered REST API status HTTP handler on: %v\n", "/hvac/status")
 
-
-	fmt.Printf("Starting HTTP RESP API listener on: %v\n", addr)
-	http.ListenAndServe(addr, nil)
+	// http.HandleFunc("/hvac/mode", setModeHandler(m))
+	// fmt.Printf("Registered REST API mode set HTTP handler on: %v\n", "/hvac/mode")
 }
 
 func ReadStatus(m *modbus.ModbusClient) (s HVACStatus) {

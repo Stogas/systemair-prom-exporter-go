@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -63,12 +64,19 @@ func main() {
 
 	if cfg.RestApiEnabled {
 		fmt.Println("REST API enabled.")
-		go StartAPI(":9998", cfg, client)
+		RegisterAPI(cfg, client)
 	} else {
 		fmt.Println("REST API disabled.")
 	}
 
 	fmt.Println("Application is running. Press Ctrl+C to stop.")
 
-	StartExporter(":" + strconv.Itoa(cfg.HTTPPort), "/metrics", client)
+	RegisterExporter("/metrics", client)
+
+	var addr = ":" + strconv.Itoa(cfg.HTTPPort)
+	fmt.Printf("Starting HTTP listener on: %v\n", addr)
+	err := http.ListenAndServe(addr, nil)
+	if err != nil {
+		fmt.Printf("HTTP listener returned error: %v\n", err)
+	}
 }
