@@ -55,6 +55,7 @@ func main() {
 
 	cfg := parseFlags()
 
+	fmt.Println()
 	if cfg.MonitoringEnabled {
 		fmt.Println("Humidity monitoring enabled. Upon a configured humidity spike, will trigger a refresh for the configured time.")
 		go monitorHumidity(cfg, client)
@@ -62,6 +63,7 @@ func main() {
 		fmt.Println("Humidity monitoring disabled.")
 	}
 
+	fmt.Println()
 	if cfg.RestApiEnabled {
 		fmt.Println("REST API enabled.")
 		RegisterAPI(cfg, client)
@@ -69,11 +71,13 @@ func main() {
 		fmt.Println("REST API disabled.")
 	}
 
-	fmt.Println("Application is running. Press Ctrl+C to stop.")
-
+	fmt.Println()
 	RegisterExporter("/metrics", client)
 
 	var addr = ":" + strconv.Itoa(cfg.HTTPPort)
+
+	fmt.Println()
+	fmt.Println("Application is running. Press Ctrl+C to stop.")
 	fmt.Printf("Starting HTTP listener on: %v\n", addr)
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {

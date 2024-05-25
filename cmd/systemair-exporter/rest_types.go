@@ -2,7 +2,7 @@ package main
 
 type HVACStatus struct {
 	UserMode         HVACUserMode    `json:"user_mode"`
-	Temperatures     HVACTemperature `json:"temperatures"`
+	Temperatures     HVACTemperature `json:"temperatures_celsius"`
 	RelativeHumidity uint16          `json:"relative_humidity"`
 	Airflow          struct {
 		Supply HVACAirflow `json:"supply"`
@@ -17,12 +17,13 @@ type HVACUserMode struct {
 }
 
 type HVACTemperature struct {
-	SupplyMode string `json:"supply_mode"`
-	Target     float64 `json:"target"`
-	OAT        float64 `json:"oat"`
-	OHT        float64 `json:"oht"`
-	SAT        float64 `json:"sat"`
-	EAT        float64 `json:"eat"`
+	SupplyMode   string `json:"supply_mode"`
+	TargetRoom   float64 `json:"target_room"`
+	TargetSupply float64 `json:"target_supply"`
+	OAT          float64 `json:"oat"`
+	OHT          float64 `json:"oht"`
+	SAT          float64 `json:"sat"`
+	EAT          float64 `json:"eat"`
 }
 
 type HVACVoltage struct {
