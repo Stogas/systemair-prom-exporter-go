@@ -8,7 +8,7 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
-func monitorHumidity(cfg HumidityConfig, m *modbus.ModbusClient) {
+func monitorHumidity(cfg Config, m *modbus.ModbusClient) {
 	fmt.Println("Humidity monitoring started.")
 
 	humidityData := make([]uint16, 0, cfg.AveragePeriod)

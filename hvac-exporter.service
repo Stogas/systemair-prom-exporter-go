@@ -8,7 +8,7 @@ StartLimitBurst=5
 [Service]
 Type=simple
 Restart=always
-ExecStart=/opt/systemair-exporter --humidityMonitoring --averagePeriod 30
+ExecStart=/opt/systemair-exporter --humidityMonitoring --averagePeriod 30 --restApiEnabled
 RestartSec=5
 [Install]
 WantedBy=multi-user.target

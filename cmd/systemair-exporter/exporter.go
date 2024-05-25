@@ -25,9 +25,9 @@ func StartExporter(addr string, path string, m *modbus.ModbusClient) {
 
 	http.Handle(path, promhttp.Handler())
 
-	fmt.Printf("Starting HTTP listener on: %v\n", addr + path)
+	fmt.Printf("Starting Prometheus exporter HTTP listener on: %v\n", addr + path)
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
-		fmt.Printf("HTTP listener returned error: %v\n", err)
+		fmt.Printf("Prometheus exporter HTTP listener returned error: %v\n", err)
 	}
 }
