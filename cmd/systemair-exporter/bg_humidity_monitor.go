@@ -28,7 +28,10 @@ func monitorHumidity(cfg Config, m *modbus.ModbusClient) {
 			// threshold := float64(averageHumidity) * (1 + cfg.PercentageIncrease/100)
 			if float64(currentHumidity) > float64(averageHumidityBefore)+cfg.PercentageIncrease {
 				fmt.Printf("Humidity spike detected! Current: %.2f%%, Average: %.2f%%, PercentageIncreaseThreshold: %.2f%%\n", float64(currentHumidity), float64(averageHumidityBefore), cfg.PercentageIncrease)
-				systemairmodbus.ActivateRefresh(m, uint16(cfg.RefreshDuration))
+				err := systemairmodbus.ActivateRefresh(m, uint16(cfg.RefreshDuration))
+				if err != nil {
+					fmt.Printf("Failed to activate Refresh mode during a humidity spike: %v", err)
+				}
 			}
 
 			if len(humidityData) >= cfg.AveragePeriod {

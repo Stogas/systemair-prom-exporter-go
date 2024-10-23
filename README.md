@@ -6,6 +6,8 @@ This rewrite is caused by:
 - My want to reduce load on a Raspberry Pi Zero W, where the Python version pins the CPU to 100%
 - My want to learn Go
 
+Code might be shitty in places, but hey - it works fine. Feel free to submit PRs if you want! 😊 
+
 As with the Python version, the tested set up is:
 - Raspberry Pi Zero W
 - A simple [USB to RS485 Adapter](https://web.archive.org/web/20180424082558/http://www.dx.com/p/usb-to-rs485-adapter-black-green-296620)
@@ -26,7 +28,7 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 - Do not hardcode modbus config, including using `/dev/ttyUSB0` as the modbus parget path, speed, etc.
 - Allow enabling/disabling specific metric subsystems (`temp`, etc.)
 - Implement better error handling
-   - Some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, or nothing)
+   - Some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, crash with `os.Exit(4)`, or do nothing)
 	 - The lowest-level read functions for Modbus in `systemairmodbus/readRegisters.go` crash the app on any error
 - Implement structured logging
 - Expand functionality to include write capabilities (I want to enable refresh mode based on external decisions)

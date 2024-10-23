@@ -93,8 +93,24 @@ func ActivateRefresh(client *modbus.ModbusClient, duration uint16) error {
 	if duration > 240 {
 		return errors.New("supplied refresh mode duration is too big, max 240min")
 	}
-	writeRegister16(client, 1104, duration)
-	writeRegister16(client, 1162, 4) // modes are shifted +1 when writing
+	err := writeRegister16(client, 1104, duration)
+	if err != nil {
+		// error out
+		// TODO: handle errors more gracefully:
+		// Use a provided (or default) logger,
+		// Do not crash the program on failure
+		fmt.Fprintf(os.Stderr, "Failed activating Refresh while setting mode duration: %v\n", err)
+		os.Exit(4)
+	}
+	err = writeRegister16(client, 1162, 4) // modes are shifted +1 when writing
+	if err != nil {
+		// error out
+		// TODO: handle errors more gracefully:
+		// Use a provided (or default) logger,
+		// Do not crash the program on failure
+		fmt.Fprintf(os.Stderr, "Failed activating Refresh while setting mode: %v\n", err)
+		os.Exit(4)
+	}
 	return nil
 }
 

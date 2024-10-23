@@ -46,7 +46,10 @@ func getStatusHandler(m *modbus.ModbusClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		status := ReadStatus(m)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(status)
+		err := json.NewEncoder(w).Encode(status)
+		if err != nil {
+			fmt.Printf("Failed to encode modbus status into JSON while processing a GET REST call: %v", err)
+		}
 	}
 }
 
