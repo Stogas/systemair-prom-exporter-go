@@ -11,14 +11,14 @@ type SystemairHeaterCollector struct {
 	// ModbusClient which we will target for systemair-prom-exporter-go/systemairmodbus functions
 	hvac *modbus.ModbusClient
 
-	triac_active prometheus.Gauge
-	triac_voltage prometheus.Gauge
-	heater_active prometheus.Gauge
-	heater_voltage prometheus.Gauge
-	heatexchanger_active prometheus.Gauge
+	triac_active          prometheus.Gauge
+	triac_voltage         prometheus.Gauge
+	heater_active         prometheus.Gauge
+	heater_voltage        prometheus.Gauge
+	heatexchanger_active  prometheus.Gauge
 	heatexchanger_voltage prometheus.Gauge
 
-	eco *prometheus.GaugeVec
+	eco         *prometheus.GaugeVec
 	freecooling *prometheus.GaugeVec
 }
 
@@ -27,43 +27,43 @@ func NewSystemairHeaterCollector(hvac *modbus.ModbusClient, namespace string) *S
 		hvac: hvac,
 		triac_active: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "triac_active",
-			Help: "Boolean gauge on whether the TRIAC Electric Heater is active. Min 0 (not active), Max 1 (active)",
+			Name:      "triac_active",
+			Help:      "Boolean gauge on whether the TRIAC Electric Heater is active. Min 0 (not active), Max 1 (active)",
 		}),
 		triac_voltage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "triac_voltage",
-			Help: "Voltage applied to the TRIAC Electric Heater. Min 0 V, Max 10 V",
+			Name:      "triac_voltage",
+			Help:      "Voltage applied to the TRIAC Electric Heater. Min 0 V, Max 10 V",
 		}),
 		heater_active: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "heater_active",
-			Help: "Boolean gauge on whether the Electric Heater is active. Min 0 (not active), Max 1 (active)",
+			Name:      "heater_active",
+			Help:      "Boolean gauge on whether the Electric Heater is active. Min 0 (not active), Max 1 (active)",
 		}),
 		heater_voltage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "heater_voltage",
-			Help: "Voltage applied to the Electric Heater. Min 0 V, Max 10 V",
+			Name:      "heater_voltage",
+			Help:      "Voltage applied to the Electric Heater. Min 0 V, Max 10 V",
 		}),
 		heatexchanger_active: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "heatexchanger_active",
-			Help: "Boolean gauge on whether the Heat Exchanger is active. Min 0 (not active), Max 1 (active)",
+			Name:      "heatexchanger_active",
+			Help:      "Boolean gauge on whether the Heat Exchanger is active. Min 0 (not active), Max 1 (active)",
 		}),
 		heatexchanger_voltage: prometheus.NewGauge(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "heatexchanger_voltage",
-			Help: "Voltage applied to the Heat Exchanger. Min 0 V, Max 10 V",
+			Name:      "heatexchanger_voltage",
+			Help:      "Voltage applied to the Heat Exchanger. Min 0 V, Max 10 V",
 		}),
 		eco: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "eco",
-			Help: "Whether ECO mode is enabled and active. Min 0 (not enabled/not active), Max 1 (enabled/active)",
+			Name:      "eco",
+			Help:      "Whether ECO mode is enabled and active. Min 0 (not enabled/not active), Max 1 (enabled/active)",
 		}, []string{"state"}),
 		freecooling: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Namespace: namespace,
-			Name: "freecooling",
-			Help: "Whether Freecooling mode is enabled and active. Min 0 (not enabled/not active), Max 1 (enabled/active)",
+			Name:      "freecooling",
+			Help:      "Whether Freecooling mode is enabled and active. Min 0 (not enabled/not active), Max 1 (enabled/active)",
 		}, []string{"state"}),
 	}
 }

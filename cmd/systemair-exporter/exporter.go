@@ -10,9 +10,10 @@ import (
 )
 
 // RegisterExporter, given an address and path, creates Prometheus Collectors,
-//   registers the to the default Prometheus Registerer,
-//   registers a Prometheus HTTP handler,
-//   and starts an HTTP server.
+//
+//	registers the to the default Prometheus Registerer,
+//	registers a Prometheus HTTP handler,
+//	and starts an HTTP server.
 func RegisterExporter(path string, m *modbus.ModbusClient) {
 	collectorTemp := NewSystemairTempCollector(m, "hvac")
 	prometheus.MustRegister(collectorTemp)

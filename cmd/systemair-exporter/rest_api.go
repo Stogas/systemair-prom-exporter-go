@@ -44,27 +44,27 @@ func SetMode(m *modbus.ModbusClient, mode string, ttl int64) error {
 
 func getStatusHandler(m *modbus.ModbusClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-			status := ReadStatus(m)
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(status)
+		status := ReadStatus(m)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(status)
 	}
 }
 
 func setModeHandler(m *modbus.ModbusClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-			var request HVACUserMode
-			err := json.NewDecoder(r.Body).Decode(&request)
-			if err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-					return
-			}
+		var request HVACUserMode
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
-			err = SetMode(m, request.Name, request.DurationNanoseconds)
-			if err != nil {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-			}
+		err = SetMode(m, request.Name, request.DurationNanoseconds)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-			w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusOK)
 	}
 }

@@ -5,19 +5,19 @@ type HVACStatus struct {
 	Temperatures     HVACTemperature `json:"temperatures_celsius"`
 	RelativeHumidity uint16          `json:"relative_humidity"`
 	Airflow          struct {
-		Supply HVACAirflow `json:"supply"`
+		Supply  HVACAirflow `json:"supply"`
 		Extract HVACAirflow `json:"extract"`
-	}                                `json:"airflow"`
-	Voltages         HVACVoltage     `json:"voltages"`
+	} `json:"airflow"`
+	Voltages HVACVoltage `json:"voltages"`
 }
 
 type HVACUserMode struct {
-	Name                string        `json:"name"`
-	DurationNanoseconds int64         `json:"duration_ns"`
+	Name                string `json:"name"`
+	DurationNanoseconds int64  `json:"duration_ns"`
 }
 
 type HVACTemperature struct {
-	SupplyMode   string `json:"supply_mode"`
+	SupplyMode   string  `json:"supply_mode"`
 	TargetRoom   float64 `json:"target_room"`
 	TargetSupply float64 `json:"target_supply"`
 	OAT          float64 `json:"oat"`

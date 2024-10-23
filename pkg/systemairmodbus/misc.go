@@ -103,7 +103,7 @@ func GetUsermodeRemaining(client *modbus.ModbusClient) time.Duration {
 	var err error
 	var usermodeRemaining time.Duration
 
-	usermodeRemaining, err = time.ParseDuration(fmt.Sprintf("%ds",readRegister32(client, 1111, modbus.INPUT_REGISTER)))
+	usermodeRemaining, err = time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 1111, modbus.INPUT_REGISTER)))
 	if err != nil {
 		// error out
 		// TODO: handle errors more gracefully:
@@ -121,7 +121,7 @@ func GetFilterRemaining(client *modbus.ModbusClient) time.Duration {
 	var err error
 	var filterRemaining time.Duration
 
-	filterRemaining, err = time.ParseDuration(fmt.Sprintf("%ds",readRegister32(client, 7005, modbus.INPUT_REGISTER)))
+	filterRemaining, err = time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 7005, modbus.INPUT_REGISTER)))
 	if err != nil {
 		// error out
 		// TODO: handle errors more gracefully:
@@ -130,7 +130,7 @@ func GetFilterRemaining(client *modbus.ModbusClient) time.Duration {
 		fmt.Fprintf(os.Stderr, "Parsing time failed with error: %v\n", err)
 		os.Exit(4)
 	}
-	
+
 	return filterRemaining
 }
 

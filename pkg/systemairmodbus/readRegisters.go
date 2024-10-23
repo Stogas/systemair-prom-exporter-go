@@ -25,7 +25,7 @@ import (
 // handling read errors and returning a 16-bit unsigned integer.
 func readRegister16(client *modbus.ModbusClient, address uint16, registerType modbus.RegType) uint16 {
 	var reg16 uint16
-	var err   error
+	var err error
 
 	// We decrease the address by 1.
 	// Unknown why, but that's the only way to get accurate values
@@ -34,7 +34,7 @@ func readRegister16(client *modbus.ModbusClient, address uint16, registerType mo
 	// starts counting from 1, while we count from 0
 	//
 	// [documentation]: https://shop.systemair.com/upload/assets/SAVE_MODBUS_VARIABLE_LIST_20190116__REV__29_.PDF
-	reg16, err  = client.ReadRegister(address - 1, registerType)
+	reg16, err = client.ReadRegister(address-1, registerType)
 
 	// TODO: handle errors more gracefully:
 	// Use a provided (or default) logger,
@@ -52,7 +52,7 @@ func readRegister16(client *modbus.ModbusClient, address uint16, registerType mo
 // handling read errors and returning a 16-bit signed integer.
 func readRegister16Signed(client *modbus.ModbusClient, address uint16, registerType modbus.RegType) int16 {
 	var reg16 uint16
-	var err   error
+	var err error
 
 	// We decrease the address by 1.
 	// Unknown why, but that's the only way to get accurate values
@@ -61,7 +61,7 @@ func readRegister16Signed(client *modbus.ModbusClient, address uint16, registerT
 	// starts counting from 1, while we count from 0
 	//
 	// [documentation]: https://shop.systemair.com/upload/assets/SAVE_MODBUS_VARIABLE_LIST_20190116__REV__29_.PDF
-	reg16, err  = client.ReadRegister(address - 1, registerType)
+	reg16, err = client.ReadRegister(address-1, registerType)
 
 	// TODO: handle errors more gracefully:
 	// Use a provided (or default) logger,
@@ -79,7 +79,7 @@ func readRegister16Signed(client *modbus.ModbusClient, address uint16, registerT
 // handling read errors and returning a 32-bit unsigned integer.
 func readRegister32(client *modbus.ModbusClient, address uint16, registerType modbus.RegType) uint32 {
 	var reg32 uint32
-	var err    error
+	var err error
 
 	// We decrease the address by 1.
 	// Unknown why, but that's the only way to get accurate values
@@ -88,7 +88,7 @@ func readRegister32(client *modbus.ModbusClient, address uint16, registerType mo
 	// starts counting from 1, while we count from 0
 	//
 	// [documentation]: https://shop.systemair.com/upload/assets/SAVE_MODBUS_VARIABLE_LIST_20190116__REV__29_.PDF
-	reg32, err  = client.ReadUint32(address - 1, registerType)
+	reg32, err = client.ReadUint32(address-1, registerType)
 
 	// TODO: handle errors more gracefully:
 	// Use a provided (or default) logger,

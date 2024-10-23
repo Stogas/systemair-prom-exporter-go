@@ -13,14 +13,14 @@ import (
 )
 
 type Config struct {
-  HTTPPort              int
+	HTTPPort int
 
-	MonitoringEnabled     bool
-	PercentageIncrease    float64
-	RefreshDuration       uint
-	AveragePeriod         int
+	MonitoringEnabled  bool
+	PercentageIncrease float64
+	RefreshDuration    uint
+	AveragePeriod      int
 
-	RestApiEnabled        bool
+	RestApiEnabled bool
 }
 
 func parseFlags() Config {
