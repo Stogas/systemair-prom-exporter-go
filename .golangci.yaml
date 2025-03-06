@@ -14,16 +14,22 @@ linters:
     - godox # Tool for detection of FIXME, TODO and other comment keywords.
     - funlen # Tool for detection of long functions.
     - gocognit # Computes and checks the cognitive complexity of functions.
+    - goconst # Finds repeated strings that could be replaced by a constant.
+    - gocritic # Provides diagnostics that check for bugs, performance and style issues.
+    - gosec # Inspects source code for security problems.
 linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
   sloglint:
     no-mixed-args: true
     kv-only: true
     attr-only: false
     no-global: ""
-    context: "scope"
+    context: "all"
     static-msg: true
-    no-raw-keys: false
-    key-naming-case: camel
+    no-raw-keys: true
+    key-naming-case: snake
     forbidden-keys:
       - time
       - level
@@ -38,6 +44,8 @@ linters-settings:
   funlen:
     lines: 60
     statements: 40
-    ignore-comments: false
+    ignore-comments: true
   gocognit:
     min-complexity: 20
+  goconst:
+    numbers: true
