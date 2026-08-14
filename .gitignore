@@ -23,3 +23,6 @@ go.work
 
 try.sh
 old_metrics.txt
+
+# Local lefthook overrides
+.lefthook-local.yml

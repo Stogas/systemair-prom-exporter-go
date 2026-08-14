@@ -5,5 +5,12 @@
 		"--fast-only"
 	],
 	"go.formatTool": "default",
-	"go.useLanguageServer": true
+	"go.useLanguageServer": true,
+	"chat.tools.terminal.autoApprove": {
+		"go": true,
+		"golangci-lint": true,
+		"govulncheck": true,
+		"lefthook": true,
+		"gofmt": true
+	}
 }

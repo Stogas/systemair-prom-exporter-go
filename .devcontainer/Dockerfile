@@ -12,6 +12,17 @@ ARG GOLANGCI_LINT_VERSION=2.12.2
 RUN GOLANGCI_LINT_DOWNLOAD="golangci-lint-${GOLANGCI_LINT_VERSION}-${TARGETOS}-${TARGETARCH}" \
 	&& curl -LO "https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/${GOLANGCI_LINT_DOWNLOAD}.tar.gz" \
 	&& tar -xf "${GOLANGCI_LINT_DOWNLOAD}.tar.gz" -C /usr/local/other-utils --strip-components=1 "${GOLANGCI_LINT_DOWNLOAD}/golangci-lint"
+# lefthook
+ARG LEFTHOOK_VERSION=2.1.10
+RUN case "$TARGETARCH" in \
+	amd64) LEFTHOOK_ARCH="x86_64" ;; \
+	arm64) LEFTHOOK_ARCH="aarch64" ;; \
+	*) echo "Unsupported arch: $TARGETARCH"; exit 1 ;; \
+	esac \
+	&& LEFTHOOK_DOWNLOAD="lefthook_${LEFTHOOK_VERSION}_${TARGETOS}_${LEFTHOOK_ARCH}.gz" \
+	&& curl -LO "https://github.com/evilmartians/lefthook/releases/download/v${LEFTHOOK_VERSION}/${LEFTHOOK_DOWNLOAD}" \
+	&& gunzip -c "${LEFTHOOK_DOWNLOAD}" > /usr/local/other-utils/lefthook \
+	&& chmod +x /usr/local/other-utils/lefthook
 
 # installs to /usr/local/go
 # changes most often, so is installed last

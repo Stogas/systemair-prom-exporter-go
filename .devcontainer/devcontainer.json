@@ -4,7 +4,8 @@
     "dockerfile": "Dockerfile",
     "args": {
       "GO_VERSION": "1.25.2",
-      "GOLANGCI_LINT_VERSION": "2.12.2"
+      "GOLANGCI_LINT_VERSION": "2.12.2",
+      "LEFTHOOK_VERSION": "2.1.10"
     }
   },
   "remoteUser": "developer",
@@ -33,5 +34,8 @@
     }
   },
   "updateContentCommand": "go install golang.org/x/vuln/cmd/govulncheck@latest",
-  "postCreateCommand": "go mod download"
+  "postCreateCommand": {
+    "go dependencies": "go mod download",
+    "lefthook install": "lefthook install"
+  }
 }
