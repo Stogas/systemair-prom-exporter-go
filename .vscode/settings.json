@@ -1,0 +1,9 @@
+{
+	"files.eol": "\n",
+	"go.lintTool": "golangci-lint",
+	"go.lintFlags": [
+		"--fast-only"
+	],
+	"go.formatTool": "default",
+	"go.useLanguageServer": true
+}

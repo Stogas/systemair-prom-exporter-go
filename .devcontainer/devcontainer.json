@@ -1,0 +1,37 @@
+{
+  "name": "systemair-prom-exporter-go",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "args": {
+      "GO_VERSION": "1.25.2",
+      "GOLANGCI_LINT_VERSION": "2.12.2"
+    }
+  },
+  "remoteUser": "developer",
+  "containerUser": "developer",
+  "updateRemoteUserUID": true,
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "files.eol": "\n",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "pkief.material-icon-theme",
+        "golang.go",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
+  "forwardPorts": [
+    9999
+  ],
+  "portsAttributes": {
+    "9999": {
+      "label": "Prometheus exporter / REST API",
+      "onAutoForward": "notify"
+    }
+  },
+  "updateContentCommand": "go install golang.org/x/vuln/cmd/govulncheck@latest",
+  "postCreateCommand": "go mod download"
+}
