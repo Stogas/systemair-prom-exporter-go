@@ -1,0 +1,27 @@
+# Included as: script: !include mode_scripts.yaml
+hvac_activate_auto:
+  alias: HVAC activate Auto
+  sequence:
+    - action: rest_command.hvac_set_user_mode
+      data:
+        name: Auto
+hvac_activate_manual:
+  alias: HVAC activate Manual
+  sequence:
+    - action: rest_command.hvac_set_user_mode
+      data:
+        name: Manual
+hvac_activate_refresh:
+  alias: HVAC activate Refresh
+  sequence:
+    - action: rest_command.hvac_set_user_mode
+      data:
+        name: Refresh
+        duration: "{{ states('input_number.hvac_refresh_minutes') | int }}"
+hvac_activate_crowded:
+  alias: HVAC activate Crowded
+  sequence:
+    - action: rest_command.hvac_set_user_mode
+      data:
+        name: Crowded
+        duration: "{{ states('input_number.hvac_crowded_hours') | int }}"

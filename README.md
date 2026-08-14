@@ -40,7 +40,7 @@ Supported modes:
 
 Example: `{"name": "Refresh", "duration": 15}`
 
-Home Assistant examples: [homeassistant/rest.yaml](homeassistant/rest.yaml) (read sensors) and [homeassistant/mode.yaml](homeassistant/mode.yaml) (mode scripts and `rest_command`).
+Home Assistant examples: [homeassistant/rest.yaml](homeassistant/rest.yaml) (read sensors), [homeassistant/configuration.snippet.yaml](homeassistant/configuration.snippet.yaml) (what to add to `configuration.yaml`), and `mode_commands.yaml` / `mode_numbers.yaml` / `mode_scripts.yaml` (mode writes).
 
 #### TODO
 

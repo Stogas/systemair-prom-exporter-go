@@ -1,0 +1,11 @@
+# Included as: rest_command: !include mode_commands.yaml
+hvac_set_user_mode:
+  url: "http://192.168.1.15:9999/hvac/mode"
+  method: POST
+  content_type: "application/json"
+  payload: >-
+    {% if duration is defined and duration | string | trim != "" %}
+    {"name": "{{ name }}", "duration": {{ duration }}}
+    {% else %}
+    {"name": "{{ name }}"}
+    {% endif %}

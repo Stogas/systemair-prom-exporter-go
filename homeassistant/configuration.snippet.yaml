@@ -1,0 +1,15 @@
+# Add these lines to your Home Assistant configuration.yaml.
+# Copy mode_commands.yaml, mode_numbers.yaml, and mode_scripts.yaml into your
+# config directory (same place as rest.yaml).
+# Update URLs in mode_commands.yaml if your exporter is not at 192.168.1.15:9999.
+#
+# You already have:
+#   rest: !include rest.yaml          # read sensors (from homeassistant/rest.yaml)
+#
+# Replace an empty scripts.yaml include with mode_scripts.yaml, or add script if missing:
+
+rest_command: !include mode_commands.yaml
+
+input_number: !include mode_numbers.yaml
+
+script: !include mode_scripts.yaml

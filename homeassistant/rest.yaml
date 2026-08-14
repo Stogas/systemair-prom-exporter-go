@@ -1,0 +1,66 @@
+  - authentication: basic
+#    username: "admin"
+#    password: "password"
+    scan_interval: 15
+    resource: http://192.168.1.15:9999/hvac/status
+    sensor:
+      - name: "HVAC user mode"
+        value_template: "{{ value_json.user_mode.name }}"
+        json_attributes_path: "$.user_mode"
+        json_attributes:
+          - duration_ns
+      - name: "HVAC user mode remaining"
+        device_class: duration
+        unit_of_measurement: s
+        value_template: "{{ value_json.user_mode.duration_s }}"
+      - name: "HVAC Target Room"
+        device_class: temperature
+        value_template: "{{ value_json.temperatures_celsius.target_room }}"
+        unit_of_measurement: '°C'
+        json_attributes_path: "$.temperatures_celsius"
+        json_attributes:
+          - supply_mode
+      - name: "HVAC Target Supply"
+        device_class: temperature
+        value_template: "{{ value_json.temperatures_celsius.target_supply }}"
+        unit_of_measurement: '°C'
+      - name: "HVAC Outdoor Air Temperature"
+        device_class: temperature
+        value_template: "{{ value_json.temperatures_celsius.oat }}"
+        unit_of_measurement: '°C'
+      - name: "HVAC Supply Air Temperature"
+        device_class: temperature
+        value_template: "{{ value_json.temperatures_celsius.sat }}"
+        unit_of_measurement: '°C'
+      - name: "HVAC Extract Air Temperature"
+        device_class: temperature
+        value_template: "{{ value_json.temperatures_celsius.eat }}"
+        unit_of_measurement: '°C'
+      - name: "HVAC Overheat Temperature"
+        device_class: temperature
+        value_template: "{{ value_json.temperatures_celsius.oht }}"
+        unit_of_measurement: '°C'
+      - name: "HVAC Humidity"
+        device_class: humidity
+        unit_of_measurement: '%'
+        value_template: "{{ value_json.relative_humidity }}"
+      - name: "HVAC Airflow Supply"
+        value_template: "{{ value_json.airflow.supply.percentage }}"
+        unit_of_measurement: "%"
+        json_attributes_path: "$.airflow.supply"
+        json_attributes:
+          - rpm
+      - name: "HVAC Airflow Extract"
+        value_template: "{{ value_json.airflow.extract.percentage }}"
+        unit_of_measurement: "%"
+        json_attributes_path: "$.airflow.extract"
+        json_attributes:
+          - rpm
+      - name: "HVAC Heat Exchanger"
+        device_class: voltage
+        value_template: "{{ value_json.voltages.heat_exchanger }}"
+        unit_of_measurement: "V"
+      - name: "HVAC Electric Heater"
+        device_class: voltage
+        value_template: "{{ value_json.voltages.electric_heater }}"
+        unit_of_measurement: "V"

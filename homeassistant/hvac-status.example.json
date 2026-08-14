@@ -1,0 +1,31 @@
+{
+	"user_mode": {
+		"name": "Manual",
+		"duration_s": 0,
+		"duration_ns": 0
+	},
+	"temperatures_celsius": {
+		"supply_mode": "Extract",
+		"target_room": 21,
+		"target_supply": 12,
+		"oat": 22.2,
+		"oht": 22.9,
+		"sat": 23.6,
+		"eat": 25.6
+	},
+	"relative_humidity": 43,
+	"airflow": {
+		"supply": {
+			"rpm": 1500,
+			"percentage": 37
+		},
+		"extract": {
+			"rpm": 1440,
+			"percentage": 37
+		}
+	},
+	"voltages": {
+		"heat_exchanger": 0,
+		"electric_heater": 0
+	}
+}

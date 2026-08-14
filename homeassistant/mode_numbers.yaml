@@ -1,0 +1,15 @@
+# Included as: input_number: !include mode_numbers.yaml
+hvac_refresh_minutes:
+  name: HVAC Refresh duration
+  min: 1
+  max: 240
+  step: 1
+  unit_of_measurement: min
+  mode: slider
+hvac_crowded_hours:
+  name: HVAC Crowded duration
+  min: 1
+  max: 8
+  step: 1
+  unit_of_measurement: h
+  mode: slider
