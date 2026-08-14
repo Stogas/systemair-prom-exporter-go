@@ -1,7 +1,6 @@
 package systemairmodbus
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -32,6 +31,21 @@ const (
 	userModeCDI2
 	userModeCDI3
 	userModePressureGuard
+)
+
+const (
+	regUsermodeRefreshTime = 1104
+	regUsermodeCrowdedTime = 1105
+	regUsermodeHMIRequest  = 1162
+
+	maxRefreshDurationMinutes = 240
+	maxCrowdedDurationHours   = 8
+
+	// HMI write values for REG_USERMODE_HMI_CHANGE_REQUEST (1162); +1 vs read enum at 1161.
+	hmiUsermodeAuto    = 1
+	hmiUsermodeManual  = 2
+	hmiUsermodeCrowded = 3
+	hmiUsermodeRefresh = 4
 )
 
 // GetHumidity gets the "PDM RHS sensor value (standard)" and "Set point for RH demand control" as a percentage.
@@ -121,20 +135,56 @@ func GetUsermode(client *modbus.ModbusClient) (string, error) {
 	}
 }
 
-// ActivateRefresh enables the "Refresh" user mode with the supplied duration, in minutes.
-func ActivateRefresh(client *modbus.ModbusClient, duration uint16) error {
-	if duration > 240 {
-		return errors.New("supplied refresh mode duration is too big, max 240min")
-	}
-	err := writeRegister16(client, 1104, duration)
+func activateTimedUserMode(
+	client *modbus.ModbusClient,
+	modeName string,
+	durationReg uint16,
+	duration uint16,
+	hmiValue uint16,
+) error {
+	err := writeRegister16(client, durationReg, duration)
 	if err != nil {
-		return fmt.Errorf("activating Refresh while setting mode duration: %w", err)
+		return fmt.Errorf("activating %s while setting mode duration: %w", modeName, err)
 	}
-	err = writeRegister16(client, 1162, 4) // modes are shifted +1 when writing
+	err = writeRegister16(client, regUsermodeHMIRequest, hmiValue)
 	if err != nil {
-		return fmt.Errorf("activating Refresh while setting mode: %w", err)
+		return fmt.Errorf("activating %s while setting mode: %w", modeName, err)
 	}
 	return nil
+}
+
+func requestUserMode(client *modbus.ModbusClient, modeName string, hmiValue uint16) error {
+	err := writeRegister16(client, regUsermodeHMIRequest, hmiValue)
+	if err != nil {
+		return fmt.Errorf("activating %s while setting mode: %w", modeName, err)
+	}
+	return nil
+}
+
+// ActivateAuto enables the Auto user mode.
+func ActivateAuto(client *modbus.ModbusClient) error {
+	return requestUserMode(client, "Auto", hmiUsermodeAuto)
+}
+
+// ActivateManual enables the Manual user mode.
+func ActivateManual(client *modbus.ModbusClient) error {
+	return requestUserMode(client, "Manual", hmiUsermodeManual)
+}
+
+// ActivateCrowded enables the Crowded user mode with the supplied duration, in hours.
+func ActivateCrowded(client *modbus.ModbusClient, durationHours uint16) error {
+	if durationHours < 1 || durationHours > maxCrowdedDurationHours {
+		return fmt.Errorf("crowded mode duration must be between 1 and %d hours", maxCrowdedDurationHours)
+	}
+	return activateTimedUserMode(client, "Crowded", regUsermodeCrowdedTime, durationHours, hmiUsermodeCrowded)
+}
+
+// ActivateRefresh enables the "Refresh" user mode with the supplied duration, in minutes.
+func ActivateRefresh(client *modbus.ModbusClient, durationMinutes uint16) error {
+	if durationMinutes < 1 || durationMinutes > maxRefreshDurationMinutes {
+		return fmt.Errorf("refresh mode duration must be between 1 and %d minutes", maxRefreshDurationMinutes)
+	}
+	return activateTimedUserMode(client, "Refresh", regUsermodeRefreshTime, durationMinutes, hmiUsermodeRefresh)
 }
 
 // GetUsermodeRemaining gets the "Remaining time for user mode state" as time.Duration.
@@ -164,8 +214,3 @@ func GetFilterRemaining(client *modbus.ModbusClient) (time.Duration, error) {
 
 	return filterRemaining, nil
 }
-
-// Not implemented:
-// SetRefresh()
-// Write address 1104 (set refresh time)
-// Write address 1162 (set new desired user mode)

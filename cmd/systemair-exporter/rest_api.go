@@ -13,8 +13,8 @@ func RegisterAPI(cfg Config, m *modbus.ModbusClient) {
 	http.HandleFunc("/hvac/status", getStatusHandler(m))
 	fmt.Printf("Registered REST API status HTTP handler on: %v\n", "/hvac/status")
 
-	// http.HandleFunc("/hvac/mode", setModeHandler(m))
-	// fmt.Printf("Registered REST API mode set HTTP handler on: %v\n", "/hvac/mode")
+	http.HandleFunc("/hvac/mode", setModeHandler(m))
+	fmt.Printf("Registered REST API mode set HTTP handler on: %v\n", "/hvac/mode")
 }
 
 func ReadStatus(m *modbus.ModbusClient) (HVACStatus, error) {
@@ -50,6 +50,7 @@ func readUserModeStatus(m *modbus.ModbusClient, userMode *HVACUserMode) error {
 	if err != nil {
 		return err
 	}
+	userMode.DurationSeconds = int64(remaining.Seconds())
 	userMode.DurationNanoseconds = remaining.Nanoseconds()
 
 	return nil

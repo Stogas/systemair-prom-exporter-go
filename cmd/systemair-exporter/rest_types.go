@@ -13,6 +13,7 @@ type HVACStatus struct {
 
 type HVACUserMode struct {
 	Name                string `json:"name"`
+	DurationSeconds     int64  `json:"duration_s"`
 	DurationNanoseconds int64  `json:"duration_ns"`
 }
 

@@ -22,6 +22,26 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 
 Register read/write failures during normal operation are logged and returned as errors; they do not terminate the process. Prometheus collectors skip failed series; REST `/hvac/status` returns HTTP 500 if any field cannot be read.
 
+#### REST API
+
+When `-restApiEnabled` is set:
+
+- `GET /hvac/status` — JSON snapshot of HVAC state (`user_mode` includes `duration_s` and `duration_ns` for remaining timed-mode countdown)
+- `POST /hvac/mode` — set user mode (JSON body). Returns 204 on success.
+
+Supported modes:
+
+| `name`   | `duration`                         |
+|----------|------------------------------------|
+| `Auto`   | not allowed                        |
+| `Manual` | not allowed                        |
+| `Refresh`| required, 1–240 (minutes)          |
+| `Crowded`| required, 1–8 (hours)              |
+
+Example: `{"name": "Refresh", "duration": 15}`
+
+Home Assistant examples: [homeassistant/rest.yaml](homeassistant/rest.yaml) (read sensors) and [homeassistant/mode.yaml](homeassistant/mode.yaml) (mode scripts and `rest_command`).
+
 #### TODO
 
 - Do not hardcode `hvac_` metric namespace prefix
@@ -30,4 +50,3 @@ Register read/write failures during normal operation are logged and returned as 
 - Do not hardcode modbus config, including using `/dev/ttyUSB0` as the modbus parget path, speed, etc.
 - Allow enabling/disabling specific metric subsystems (`temp`, etc.)
 - Implement structured logging
-- Expand functionality to include write capabilities (I want to enable refresh mode based on external decisions)
