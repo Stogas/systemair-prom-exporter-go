@@ -1,6 +1,6 @@
 module github.com/Stogas/systemair-prom-exporter-go
 
-go 1.25.2
+go 1.26.6
 
 require github.com/simonvetter/modbus v1.6.3
 

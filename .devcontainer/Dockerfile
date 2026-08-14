@@ -26,7 +26,7 @@ RUN case "$TARGETARCH" in \
 
 # installs to /usr/local/go
 # changes most often, so is installed last
-ARG GO_VERSION=1.25.2
+ARG GO_VERSION=1.26.6
 RUN GO_DOWNLOAD="go${GO_VERSION}.${TARGETOS}-${TARGETARCH}" \
 	&& curl -LO "https://go.dev/dl/${GO_DOWNLOAD}.tar.gz" \
 	&& tar -xf "${GO_DOWNLOAD}.tar.gz" -C /usr/local

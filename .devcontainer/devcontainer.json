@@ -3,7 +3,7 @@
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
-      "GO_VERSION": "1.25.2",
+      "GO_VERSION": "1.26.6",
       "GOLANGCI_LINT_VERSION": "2.12.2",
       "LEFTHOOK_VERSION": "2.1.10"
     }
