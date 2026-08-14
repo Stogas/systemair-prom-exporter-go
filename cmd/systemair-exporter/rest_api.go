@@ -37,11 +37,6 @@ func ReadStatus(m *modbus.ModbusClient) (s HVACStatus) {
 	return
 }
 
-func SetMode(m *modbus.ModbusClient, mode string, ttl int64) error {
-	// Implementation to set mode on Modbus
-	return nil
-}
-
 func getStatusHandler(m *modbus.ModbusClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		status := ReadStatus(m)
@@ -50,24 +45,5 @@ func getStatusHandler(m *modbus.ModbusClient) http.HandlerFunc {
 		if err != nil {
 			fmt.Printf("Failed to encode modbus status into JSON while processing a GET REST call: %v", err)
 		}
-	}
-}
-
-func setModeHandler(m *modbus.ModbusClient) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var request HVACUserMode
-		err := json.NewDecoder(r.Body).Decode(&request)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		err = SetMode(m, request.Name, request.DurationNanoseconds)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
 	}
 }

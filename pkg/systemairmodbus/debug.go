@@ -28,7 +28,7 @@ func PrintModbusRegisters(client *modbus.ModbusClient) {
 	fmt.Println()
 	fmt.Printf("Heat exchanger active: %t\n", GetHeatExchangerActive(client))       // hvac_heater_active
 	fmt.Printf("Heat exchanger voltage: %.1f V\n", GetHeatExchangerVoltage(client)) // hvac_heater_voltage
-	// TODO: heater & TRIAC correctness is unverified - these two might mean opposite things;
+	// Note: heater & TRIAC correctness is unverified - these two might mean opposite things;
 	// also, I'm not sure what TRIAC means and if it's actually an electric heater
 	fmt.Printf("Electric heater active: %t\n", GetHeaterActive(client))            // hvac_heater_active
 	fmt.Printf("Electric heater voltage: %.1f V\n", GetHeaterVoltage(client))      // hvac_heater_voltage

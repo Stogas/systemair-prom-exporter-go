@@ -4,6 +4,14 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
+type tempMode uint16
+
+const (
+	tempModeSupply tempMode = iota
+	tempModeRoom
+	tempModeExtract
+)
+
 // GetTemp gets the Temperature Sensor values in Celsius, based on the supplied sensor name.
 // OAT is the Outdoor Air Temperature.
 // SAT is the Supply Air Temperature.
@@ -30,16 +38,16 @@ func GetTemp(client *modbus.ModbusClient, sensor string) float64 {
 // 1 - Room
 // 2 - Extract
 func GetTempMode(client *modbus.ModbusClient) string {
-	// TODO: use iota
-	switch readRegister16(client, 2031, modbus.HOLDING_REGISTER) {
-	case 0:
+	switch tempMode(readRegister16(client, 2031, modbus.HOLDING_REGISTER)) {
+	case tempModeSupply:
 		return "Supply"
-	case 1:
+	case tempModeRoom:
 		return "Room"
-	case 2:
+	case tempModeExtract:
 		return "Extract"
+	default:
+		return unknownRegisterValue
 	}
-	return "Error"
 }
 
 // GetTempDemandPercentage gets the "Output of the SATC" in percentage

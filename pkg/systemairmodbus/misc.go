@@ -9,6 +9,32 @@ import (
 	"github.com/simonvetter/modbus"
 )
 
+type iaqLevel uint16
+
+const (
+	iaqEconomic iaqLevel = iota
+	iaqGood
+	iaqImproving
+)
+
+type userMode uint16
+
+const (
+	userModeAuto userMode = iota
+	userModeManual
+	userModeCrowded
+	userModeRefresh
+	userModeFireplace
+	userModeAway
+	userModeHoliday
+	userModeCookerHood
+	userModeVacuumCleaner
+	userModeCDI1
+	userModeCDI2
+	userModeCDI3
+	userModePressureGuard
+)
+
 // GetHumidity gets the "PDM RHS sensor value (standard)" and "Set point for RH demand control" as a percentage.
 // To select the value, provide "sensor" or "demand" as the 'source' value
 // Min 0 %, Max 100 %.
@@ -28,16 +54,16 @@ func GetHumidity(client *modbus.ModbusClient, source string) uint16 {
 // 1 - Good
 // 2 - Improving
 func GetIAQ(client *modbus.ModbusClient) string {
-	// TODO: use iota
-	switch readRegister16(client, 1123, modbus.INPUT_REGISTER) {
-	case 0:
+	switch iaqLevel(readRegister16(client, 1123, modbus.INPUT_REGISTER)) {
+	case iaqEconomic:
 		return "Economic"
-	case 1:
+	case iaqGood:
 		return "Good"
-	case 2:
+	case iaqImproving:
 		return "Improving"
+	default:
+		return unknownRegisterValue
 	}
-	return "Error"
 }
 
 // GetUsermode gets the "Active user mode" as a string.
@@ -56,36 +82,36 @@ func GetIAQ(client *modbus.ModbusClient) string {
 // 11 - CDI3
 // 12 - PressureGuard
 func GetUsermode(client *modbus.ModbusClient) string {
-	// TODO: use iota
-	switch readRegister16(client, 1161, modbus.INPUT_REGISTER) {
-	case 0:
+	switch userMode(readRegister16(client, 1161, modbus.INPUT_REGISTER)) {
+	case userModeAuto:
 		return "Auto"
-	case 1:
+	case userModeManual:
 		return "Manual"
-	case 2:
+	case userModeCrowded:
 		return "Crowded"
-	case 3:
+	case userModeRefresh:
 		return "Refresh"
-	case 4:
+	case userModeFireplace:
 		return "Fireplace"
-	case 5:
+	case userModeAway:
 		return "Away"
-	case 6:
+	case userModeHoliday:
 		return "Holiday"
-	case 7:
+	case userModeCookerHood:
 		return "CookerHood"
-	case 8:
+	case userModeVacuumCleaner:
 		return "VacuumCleaner"
-	case 9:
+	case userModeCDI1:
 		return "CDI1"
-	case 10:
+	case userModeCDI2:
 		return "CDI2"
-	case 11:
+	case userModeCDI3:
 		return "CDI3"
-	case 12:
+	case userModePressureGuard:
 		return "PressureGuard"
+	default:
+		return unknownRegisterValue
 	}
-	return "Error"
 }
 
 // ActivateRefresh enables the "Refresh" user mode with the supplied duration, in minutes.
@@ -116,10 +142,7 @@ func ActivateRefresh(client *modbus.ModbusClient, duration uint16) error {
 
 // GetUsermodeRemaining gets the "Remaining time for user mode state" as time.Duration.
 func GetUsermodeRemaining(client *modbus.ModbusClient) time.Duration {
-	var err error
-	var usermodeRemaining time.Duration
-
-	usermodeRemaining, err = time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 1111, modbus.INPUT_REGISTER)))
+	usermodeRemaining, err := time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 1111, modbus.INPUT_REGISTER)))
 	if err != nil {
 		// error out
 		// TODO: handle errors more gracefully:
@@ -134,10 +157,7 @@ func GetUsermodeRemaining(client *modbus.ModbusClient) time.Duration {
 
 // GetFilterRemaining gets the "Remaining time for filter" as time.Duration.
 func GetFilterRemaining(client *modbus.ModbusClient) time.Duration {
-	var err error
-	var filterRemaining time.Duration
-
-	filterRemaining, err = time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 7005, modbus.INPUT_REGISTER)))
+	filterRemaining, err := time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 7005, modbus.INPUT_REGISTER)))
 	if err != nil {
 		// error out
 		// TODO: handle errors more gracefully:

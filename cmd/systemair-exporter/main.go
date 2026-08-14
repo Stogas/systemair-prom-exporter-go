@@ -79,7 +79,13 @@ func main() {
 	fmt.Println()
 	fmt.Println("Application is running. Press Ctrl+C to stop.")
 	fmt.Printf("Starting HTTP listener on: %v\n", addr)
-	err := http.ListenAndServe(addr, nil)
+	server := &http.Server{
+		Addr:         addr,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	}
+	err := server.ListenAndServe()
 	if err != nil {
 		fmt.Printf("HTTP listener returned error: %v\n", err)
 	}

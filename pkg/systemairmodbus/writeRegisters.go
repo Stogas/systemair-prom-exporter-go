@@ -23,7 +23,6 @@ func writeRegister16(client *modbus.ModbusClient, address uint16, value uint16) 
 	// Use a provided (or default) logger,
 	// Do not crash the program on failure
 	if err != nil {
-		// error out
 		fmt.Fprintf(os.Stderr, "Modbus writing register %d failed with error: %v\n", address, err)
 		os.Exit(2)
 	}

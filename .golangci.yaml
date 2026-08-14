@@ -1,14 +1,14 @@
+version: "2"
 linters:
+  default: none
   enable:
-    # enabled by default
+    # enabled by default (gosimple merged into staticcheck in v2)
     - errcheck # Errcheck is a program for checking for unchecked errors in Go code. These unchecked errors can be critical bugs in some cases.
-    - gosimple # Linter for Go source code that specializes in simplifying code.
     - govet # Vet examines Go source code and reports suspicious constructs. It is roughly the same as 'go vet' and uses its passes.
     - ineffassign # Detects when assignments to existing variables are not used.
     - staticcheck # It's a set of rules from staticcheck. It's not the same thing as the staticcheck binary.
     - unused # Checks Go code for unused constants, variables, functions and types.
-    # additional
-    - goimports # Check import statements are formatted according to the 'goimport' command. Reformat imports in autofix mode.
+    # additional (original)
     - misspell # Finds commonly misspelled English words.
     - sloglint # Ensure consistent code style when using log/slog.
     - godox # Tool for detection of FIXME, TODO and other comment keywords.
@@ -17,35 +17,128 @@ linters:
     - goconst # Finds repeated strings that could be replaced by a constant.
     - gocritic # Provides diagnostics that check for bugs, performance and style issues.
     - gosec # Inspects source code for security problems.
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-  sloglint:
-    no-mixed-args: true
-    kv-only: true
-    attr-only: false
-    no-global: ""
-    context: "all"
-    static-msg: true
-    no-raw-keys: true
-    key-naming-case: snake
-    forbidden-keys:
-      - time
-      - level
-      - msg
-      - source
-    args-on-sep-lines: false
-  godox:
-    keywords:
-      - TODO
-      - BUG
-      - FIXME
-  funlen:
-    lines: 60
-    statements: 40
-    ignore-comments: true
-  gocognit:
-    min-complexity: 20
-  goconst:
-    numbers: true
+    # additional (from v2 reference; zero findings on this codebase)
+    - errorlint # Finds issues with error wrapping (Go 1.13+).
+    - modernize # Suggest simplifications to Go code, using modern language and library features.
+    - nilerr # Ensures errors are not nil when checked.
+    - nilnesserr # Reports mismatches where err != nil is checked but a different nil is returned.
+    - nilnil # Prevents simultaneous return of nil error and an invalid value.
+    - dupl # Detects duplicate code fragments.
+    - dupword # Checks for duplicate words in the source code.
+    - whitespace # Checks for unnecessary whitespace in the code.
+    - nestif # Flags deeply nested if statements.
+    - nakedret # Warns about naked returns in functions.
+    - exptostd # Detects functions from golang.org/x/exp/ that can be replaced by std functions.
+    - noctx # Ensures HTTP requests use context.Context.
+    - bodyclose # Checks that HTTP response bodies are properly closed.
+    - spancheck # Validates correct usage of OpenTelemetry/Census spans.
+    - nosprintfhostport # Checks for misuse of fmt.Sprintf for host/port construction.
+    - protogetter # Enforces use of getters for protocol buffer message fields.
+    - durationcheck # Detects improper multiplication of time.Duration values.
+    - predeclared # Flags shadowing of Go's predeclared identifiers.
+    - errname # Enforces proper naming for error variables and types.
+    - goprintffuncname # Ensures printf-like functions are named with an "f" suffix.
+    - canonicalheader # Verifies that HTTP header keys are in canonical form.
+    - perfsprint # Suggests faster alternatives to fmt.Sprintf.
+    - unconvert # Removes unnecessary type conversions.
+    - makezero # Identifies slice declarations with a non-zero initial length.
+    - wastedassign # Detects wasted assignment statements.
+    - intrange # Encourages use of range loops instead of index-based loops.
+    - copyloopvar # Detects incorrect copying of loop variables in closures.
+    - exhaustive # Checks exhaustiveness of enum switch statements.
+    - gochecksumtype # Ensures exhaustiveness on Go "sum types".
+    - promlinter # Validates naming conventions for Prometheus metrics.
+    - gomoddirectives # Manages 'replace', 'retract', and 'excludes' in go.mod.
+    - gomodguard_v2 # Allow and block list linter for direct Go module dependencies.
+    - gocheckcompilerdirectives # Validates special go compiler directive comments.
+    - nolintlint # Reports improperly formatted or insufficient nolint directives.
+    - iface # Detects improper use of interfaces to avoid overengineering.
+    - reassign # Ensures that package variables are not reassigned.
+    - gochecknoglobals # Checks for the presence of global variables.
+    - gochecknoinits # Ensures no init functions are present for better clarity.
+    - tparallel # Detects inappropriate usage of t.Parallel() in tests.
+    - testableexamples # Checks that example code in tests is properly testable.
+    - usetesting # Flags misuse of testing package functions.
+    - testifylint # Validates correct usage of the testify framework.
+    - godoclint # Ensures documentation comments are present and well-formed.
+    - asciicheck # Ensures identifiers contain only ASCII characters.
+    - bidichk # Checks for dangerous Unicode bidirectional characters.
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    sloglint:
+      no-mixed-args: true
+      kv-only: true
+      attr-only: false
+      context: all
+      static-msg: true
+      no-raw-keys: true
+      key-naming-case: snake
+      forbidden-keys:
+        - time
+        - level
+        - msg
+        - source
+      args-on-sep-lines: false
+    godox:
+      keywords:
+        - TODO
+        - BUG
+        - FIXME
+    funlen:
+      lines: 60
+      statements: 40
+      ignore-comments: true
+    gocognit:
+      min-complexity: 20
+    goconst:
+      numbers: true
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    usetesting:
+      os-temp-dir: true
+    gomodguard_v2:
+      blocked:
+        - module: github.com/golang/protobuf
+          recommendations:
+            - google.golang.org/protobuf
+          reason: see
+            https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules
+        - module: github.com/satori/go.uuid
+          recommendations:
+            - github.com/gofrs/uuid/v5
+          reason: satori's package is not maintained
+        - module: github.com/google/uuid
+          recommendations:
+            - github.com/gofrs/uuid/v5
+          reason: google's uuid package seems to be barely maintained
+        - module: github.com/golang-jwt/jwt
+          recommendations:
+            - github.com/lestrrat-go/jwx
+          reason: lestrrat's packge simply seems smarter
+        - module: github.com/go-yaml/yaml
+          recommendations:
+            - github.com/goccy/go-yaml
+          reason: the original package has been deprecated
+        - module: github.com/ghodss/yaml
+          recommendations:
+            - github.com/goccy/go-yaml
+          reason: the ghodss package uses the original go-yaml package under the hood,
+            which has been deprecated
+        - module: sigs.k8s.io/yaml
+          recommendations:
+            - github.com/goccy/go-yaml
+          reason: the kubernetes package is not intended to be used directly
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+formatters:
+  enable:
+    - gofmt
+    - goimports # Check import statements are formatted according to the 'goimport' command. Reformat imports in autofix mode.
