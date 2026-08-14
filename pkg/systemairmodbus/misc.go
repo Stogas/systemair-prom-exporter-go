@@ -3,7 +3,6 @@ package systemairmodbus
 import (
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/simonvetter/modbus"
@@ -38,14 +37,14 @@ const (
 // GetHumidity gets the "PDM RHS sensor value (standard)" and "Set point for RH demand control" as a percentage.
 // To select the value, provide "sensor" or "demand" as the 'source' value
 // Min 0 %, Max 100 %.
-func GetHumidity(client *modbus.ModbusClient, source string) uint16 {
+func GetHumidity(client *modbus.ModbusClient, source string) (uint16, error) {
 	switch source {
 	case "sensor":
 		return readRegister16(client, 12136, modbus.HOLDING_REGISTER)
 	case "demand":
 		return readRegister16(client, 1011, modbus.HOLDING_REGISTER)
 	}
-	return 0
+	return 0, fmt.Errorf("unknown humidity source %q", source)
 }
 
 // GetIAQ gets the "Actual IAQ level" as a string.
@@ -53,16 +52,20 @@ func GetHumidity(client *modbus.ModbusClient, source string) uint16 {
 // 0 - Economic
 // 1 - Good
 // 2 - Improving
-func GetIAQ(client *modbus.ModbusClient) string {
-	switch iaqLevel(readRegister16(client, 1123, modbus.INPUT_REGISTER)) {
+func GetIAQ(client *modbus.ModbusClient) (string, error) {
+	reg, err := readRegister16(client, 1123, modbus.INPUT_REGISTER)
+	if err != nil {
+		return "", err
+	}
+	switch iaqLevel(reg) {
 	case iaqEconomic:
-		return "Economic"
+		return "Economic", nil
 	case iaqGood:
-		return "Good"
+		return "Good", nil
 	case iaqImproving:
-		return "Improving"
+		return "Improving", nil
 	default:
-		return unknownRegisterValue
+		return unknownRegisterValue, nil
 	}
 }
 
@@ -81,36 +84,40 @@ func GetIAQ(client *modbus.ModbusClient) string {
 // 10 - CDI2
 // 11 - CDI3
 // 12 - PressureGuard
-func GetUsermode(client *modbus.ModbusClient) string {
-	switch userMode(readRegister16(client, 1161, modbus.INPUT_REGISTER)) {
+func GetUsermode(client *modbus.ModbusClient) (string, error) {
+	reg, err := readRegister16(client, 1161, modbus.INPUT_REGISTER)
+	if err != nil {
+		return "", err
+	}
+	switch userMode(reg) {
 	case userModeAuto:
-		return "Auto"
+		return "Auto", nil
 	case userModeManual:
-		return "Manual"
+		return "Manual", nil
 	case userModeCrowded:
-		return "Crowded"
+		return "Crowded", nil
 	case userModeRefresh:
-		return "Refresh"
+		return "Refresh", nil
 	case userModeFireplace:
-		return "Fireplace"
+		return "Fireplace", nil
 	case userModeAway:
-		return "Away"
+		return "Away", nil
 	case userModeHoliday:
-		return "Holiday"
+		return "Holiday", nil
 	case userModeCookerHood:
-		return "CookerHood"
+		return "CookerHood", nil
 	case userModeVacuumCleaner:
-		return "VacuumCleaner"
+		return "VacuumCleaner", nil
 	case userModeCDI1:
-		return "CDI1"
+		return "CDI1", nil
 	case userModeCDI2:
-		return "CDI2"
+		return "CDI2", nil
 	case userModeCDI3:
-		return "CDI3"
+		return "CDI3", nil
 	case userModePressureGuard:
-		return "PressureGuard"
+		return "PressureGuard", nil
 	default:
-		return unknownRegisterValue
+		return unknownRegisterValue, nil
 	}
 }
 
@@ -121,53 +128,41 @@ func ActivateRefresh(client *modbus.ModbusClient, duration uint16) error {
 	}
 	err := writeRegister16(client, 1104, duration)
 	if err != nil {
-		// error out
-		// TODO: handle errors more gracefully:
-		// Use a provided (or default) logger,
-		// Do not crash the program on failure
-		fmt.Fprintf(os.Stderr, "Failed activating Refresh while setting mode duration: %v\n", err)
-		os.Exit(4)
+		return fmt.Errorf("activating Refresh while setting mode duration: %w", err)
 	}
 	err = writeRegister16(client, 1162, 4) // modes are shifted +1 when writing
 	if err != nil {
-		// error out
-		// TODO: handle errors more gracefully:
-		// Use a provided (or default) logger,
-		// Do not crash the program on failure
-		fmt.Fprintf(os.Stderr, "Failed activating Refresh while setting mode: %v\n", err)
-		os.Exit(4)
+		return fmt.Errorf("activating Refresh while setting mode: %w", err)
 	}
 	return nil
 }
 
 // GetUsermodeRemaining gets the "Remaining time for user mode state" as time.Duration.
-func GetUsermodeRemaining(client *modbus.ModbusClient) time.Duration {
-	usermodeRemaining, err := time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 1111, modbus.INPUT_REGISTER)))
+func GetUsermodeRemaining(client *modbus.ModbusClient) (time.Duration, error) {
+	seconds, err := readRegister32(client, 1111, modbus.INPUT_REGISTER)
 	if err != nil {
-		// error out
-		// TODO: handle errors more gracefully:
-		// Use a provided (or default) logger,
-		// Do not crash the program on failure
-		fmt.Fprintf(os.Stderr, "Parsing time failed with error: %v\n", err)
-		os.Exit(4)
+		return 0, err
+	}
+	usermodeRemaining, err := time.ParseDuration(fmt.Sprintf("%ds", seconds))
+	if err != nil {
+		return 0, fmt.Errorf("parsing usermode remaining time: %w", err)
 	}
 
-	return usermodeRemaining
+	return usermodeRemaining, nil
 }
 
 // GetFilterRemaining gets the "Remaining time for filter" as time.Duration.
-func GetFilterRemaining(client *modbus.ModbusClient) time.Duration {
-	filterRemaining, err := time.ParseDuration(fmt.Sprintf("%ds", readRegister32(client, 7005, modbus.INPUT_REGISTER)))
+func GetFilterRemaining(client *modbus.ModbusClient) (time.Duration, error) {
+	seconds, err := readRegister32(client, 7005, modbus.INPUT_REGISTER)
 	if err != nil {
-		// error out
-		// TODO: handle errors more gracefully:
-		// Use a provided (or default) logger,
-		// Do not crash the program on failure
-		fmt.Fprintf(os.Stderr, "Parsing time failed with error: %v\n", err)
-		os.Exit(4)
+		return 0, err
+	}
+	filterRemaining, err := time.ParseDuration(fmt.Sprintf("%ds", seconds))
+	if err != nil {
+		return 0, fmt.Errorf("parsing filter remaining time: %w", err)
 	}
 
-	return filterRemaining
+	return filterRemaining, nil
 }
 
 // Not implemented:

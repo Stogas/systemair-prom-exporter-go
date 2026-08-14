@@ -61,19 +61,39 @@ func (e *SystemairTempCollector) Collect(ch chan<- prometheus.Metric) {
 	for _, mode := range []string{"supply", "room", "extract"} {
 		e.temp_mode_enabled.WithLabelValues(mode).Set(0)
 	}
-	e.temp_mode_enabled.WithLabelValues(strings.ToLower(systemairmodbus.GetTempMode(e.hvac))).Set(1)
+	tempMode, err := systemairmodbus.GetTempMode(e.hvac)
+	if err != nil {
+		logModbusError("collector temp mode", err)
+	} else {
+		e.temp_mode_enabled.WithLabelValues(strings.ToLower(tempMode)).Set(1)
+	}
 	e.temp_mode_enabled.Collect(ch)
 
 	for _, sensor := range []string{"OAT", "SAT", "EAT", "OHT"} {
-		e.temp_degrees.WithLabelValues(sensor).Set(systemairmodbus.GetTemp(e.hvac, sensor))
+		temp, err := systemairmodbus.GetTemp(e.hvac, sensor)
+		if err != nil {
+			logModbusError("collector temp degrees "+sensor, err)
+		} else {
+			e.temp_degrees.WithLabelValues(sensor).Set(temp)
+		}
 	}
 	e.temp_degrees.Collect(ch)
 
 	for _, target := range []string{"room", "supply"} {
-		e.temp_target_degrees.WithLabelValues(target).Set(float64(systemairmodbus.GetTempTarget(e.hvac, target)))
+		temp, err := systemairmodbus.GetTempTarget(e.hvac, target)
+		if err != nil {
+			logModbusError("collector temp target "+target, err)
+		} else {
+			e.temp_target_degrees.WithLabelValues(target).Set(temp)
+		}
 	}
 	e.temp_target_degrees.Collect(ch)
 
-	e.temp_controller_percentage.Set(float64(systemairmodbus.GetTempDemandPercentage(e.hvac)))
+	demandPct, err := systemairmodbus.GetTempDemandPercentage(e.hvac)
+	if err != nil {
+		logModbusError("collector temp controller percentage", err)
+	} else {
+		e.temp_controller_percentage.Set(float64(demandPct))
+	}
 	e.temp_controller_percentage.Collect(ch)
 }

@@ -13,7 +13,11 @@ func monitorHumidity(cfg Config, m *modbus.ModbusClient) {
 	fmt.Println("Humidity monitoring started.")
 
 	humidityData := make([]uint16, 0, cfg.AveragePeriod)
-	currentHumidity := systemairmodbus.GetHumidity(m, "sensor")
+	currentHumidity, err := systemairmodbus.GetHumidity(m, "sensor")
+	if err != nil {
+		logModbusError("humidity monitor initial reading", err)
+		return
+	}
 	humidityData = append(humidityData, currentHumidity)
 	fmt.Printf("Current Humidity: %d%%\n", currentHumidity)
 
@@ -21,7 +25,11 @@ func monitorHumidity(cfg Config, m *modbus.ModbusClient) {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		currentHumidity := systemairmodbus.GetHumidity(m, "sensor")
+		currentHumidity, err := systemairmodbus.GetHumidity(m, "sensor")
+		if err != nil {
+			logModbusError("humidity monitor reading", err)
+			continue
+		}
 
 		averageHumidityBefore := calculateAverage(humidityData)
 		// threshold := float64(averageHumidity) * (1 + cfg.PercentageIncrease/100)

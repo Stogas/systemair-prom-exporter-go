@@ -81,57 +81,35 @@ func (e *SystemairHeaterCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (e *SystemairHeaterCollector) Collect(ch chan<- prometheus.Metric) {
-	if systemairmodbus.GetTRIACActive(e.hvac) {
-		e.triac_active.Set(1)
-	} else {
-		e.triac_active.Set(0)
-	}
-	e.triac_active.Collect(ch)
+	triacActive, err := systemairmodbus.GetTRIACActive(e.hvac)
+	collectBoolGauge(ch, e.triac_active, triacActive, err, "collector triac active")
 
-	e.triac_voltage.Set(systemairmodbus.GetTRIACVoltage(e.hvac))
-	e.triac_voltage.Collect(ch)
+	triacVoltage, err := systemairmodbus.GetTRIACVoltage(e.hvac)
+	collectFloatGauge(ch, e.triac_voltage, triacVoltage, err, "collector triac voltage")
 
-	if systemairmodbus.GetHeaterActive(e.hvac) {
-		e.heater_active.Set(1)
-	} else {
-		e.heater_active.Set(0)
-	}
-	e.heater_active.Collect(ch)
+	heaterActive, err := systemairmodbus.GetHeaterActive(e.hvac)
+	collectBoolGauge(ch, e.heater_active, heaterActive, err, "collector heater active")
 
-	e.heater_voltage.Set(systemairmodbus.GetHeaterVoltage(e.hvac))
-	e.heater_voltage.Collect(ch)
+	heaterVoltage, err := systemairmodbus.GetHeaterVoltage(e.hvac)
+	collectFloatGauge(ch, e.heater_voltage, heaterVoltage, err, "collector heater voltage")
 
-	if systemairmodbus.GetHeatExchangerActive(e.hvac) {
-		e.heatexchanger_active.Set(1)
-	} else {
-		e.heatexchanger_active.Set(0)
-	}
-	e.heatexchanger_active.Collect(ch)
+	heatexchangerActive, err := systemairmodbus.GetHeatExchangerActive(e.hvac)
+	collectBoolGauge(ch, e.heatexchanger_active, heatexchangerActive, err, "collector heatexchanger active")
 
-	e.heatexchanger_voltage.Set(systemairmodbus.GetHeatExchangerVoltage(e.hvac))
-	e.heatexchanger_voltage.Collect(ch)
+	heatexchangerVoltage, err := systemairmodbus.GetHeatExchangerVoltage(e.hvac)
+	collectFloatGauge(ch, e.heatexchanger_voltage, heatexchangerVoltage, err, "collector heatexchanger voltage")
 
-	if systemairmodbus.GetEcoEnabled(e.hvac) {
-		e.eco.WithLabelValues("enabled").Set(1)
-	} else {
-		e.eco.WithLabelValues("enabled").Set(0)
-	}
-	if systemairmodbus.GetEcoActive(e.hvac) {
-		e.eco.WithLabelValues("active").Set(1)
-	} else {
-		e.eco.WithLabelValues("active").Set(0)
-	}
+	ecoEnabled, err := systemairmodbus.GetEcoEnabled(e.hvac)
+	collectLabelledBoolGauge(e.eco, "enabled", ecoEnabled, err, "collector eco enabled")
+
+	ecoActive, err := systemairmodbus.GetEcoActive(e.hvac)
+	collectLabelledBoolGauge(e.eco, "active", ecoActive, err, "collector eco active")
 	e.eco.Collect(ch)
 
-	if systemairmodbus.GetFreecoolingEnabled(e.hvac) {
-		e.freecooling.WithLabelValues("enabled").Set(1)
-	} else {
-		e.freecooling.WithLabelValues("enabled").Set(0)
-	}
-	if systemairmodbus.GetFreecoolingActive(e.hvac) {
-		e.freecooling.WithLabelValues("active").Set(1)
-	} else {
-		e.freecooling.WithLabelValues("active").Set(0)
-	}
+	freecoolingEnabled, err := systemairmodbus.GetFreecoolingEnabled(e.hvac)
+	collectLabelledBoolGauge(e.freecooling, "enabled", freecoolingEnabled, err, "collector freecooling enabled")
+
+	freecoolingActive, err := systemairmodbus.GetFreecoolingActive(e.hvac)
+	collectLabelledBoolGauge(e.freecooling, "active", freecoolingActive, err, "collector freecooling active")
 	e.freecooling.Collect(ch)
 }

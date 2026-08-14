@@ -63,23 +63,48 @@ func (e *SystemairMiscCollector) Collect(ch chan<- prometheus.Metric) {
 	for _, value := range []string{"Economic", "Good", "Improving"} {
 		e.iaq_level.WithLabelValues(value).Set(0)
 	}
-	e.iaq_level.WithLabelValues(systemairmodbus.GetIAQ(e.hvac)).Set(1)
+	iaq, err := systemairmodbus.GetIAQ(e.hvac)
+	if err != nil {
+		logModbusError("collector iaq level", err)
+	} else {
+		e.iaq_level.WithLabelValues(iaq).Set(1)
+	}
 	e.iaq_level.Collect(ch)
 
-	e.airfilter_remaining_seconds.Set(systemairmodbus.GetFilterRemaining(e.hvac).Seconds())
+	filterRemaining, err := systemairmodbus.GetFilterRemaining(e.hvac)
+	if err != nil {
+		logModbusError("collector airfilter remaining", err)
+	} else {
+		e.airfilter_remaining_seconds.Set(filterRemaining.Seconds())
+	}
 	e.airfilter_remaining_seconds.Collect(ch)
 
 	for _, value := range []string{"sensor", "demand"} {
-		e.humidity_percentage.WithLabelValues(value).Set(float64(systemairmodbus.GetHumidity(e.hvac, value)))
+		humidity, err := systemairmodbus.GetHumidity(e.hvac, value)
+		if err != nil {
+			logModbusError("collector humidity "+value, err)
+		} else {
+			e.humidity_percentage.WithLabelValues(value).Set(float64(humidity))
+		}
 	}
 	e.humidity_percentage.Collect(ch)
 
 	for _, value := range []string{"auto", "manual", "crowded", "refresh", "fireplace", "away", "holiday", "cookerhood", "vacuumcleaner", "cdi1", "cdi2", "cdi3", "pressureguard"} {
 		e.usermode_enabled.WithLabelValues(value).Set(0)
 	}
-	e.usermode_enabled.WithLabelValues(strings.ToLower(systemairmodbus.GetUsermode(e.hvac))).Set(1)
+	userMode, err := systemairmodbus.GetUsermode(e.hvac)
+	if err != nil {
+		logModbusError("collector usermode", err)
+	} else {
+		e.usermode_enabled.WithLabelValues(strings.ToLower(userMode)).Set(1)
+	}
 	e.usermode_enabled.Collect(ch)
 
-	e.usermode_remaining_seconds.Set(systemairmodbus.GetUsermodeRemaining(e.hvac).Seconds())
+	usermodeRemaining, err := systemairmodbus.GetUsermodeRemaining(e.hvac)
+	if err != nil {
+		logModbusError("collector usermode remaining", err)
+	} else {
+		e.usermode_remaining_seconds.Set(usermodeRemaining.Seconds())
+	}
 	e.usermode_remaining_seconds.Collect(ch)
 }

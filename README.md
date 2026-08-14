@@ -17,8 +17,10 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 
 #### Exit codes
 
-- Exit code of `2` signals Modbus related issues
+- Exit code of `2` signals Modbus client creation, configuration, or connection failures at startup
 - Exit code of `3` signals Prometheus exporter related issues
+
+Register read/write failures during normal operation are logged and returned as errors; they do not terminate the process. Prometheus collectors skip failed series; REST `/hvac/status` returns HTTP 500 if any field cannot be read.
 
 #### TODO
 
@@ -27,9 +29,5 @@ This includes the [2019 version of the Systemair Modbus reference map](https://s
 - Do not hardcode HTTP metrics path `/metrics`
 - Do not hardcode modbus config, including using `/dev/ttyUSB0` as the modbus parget path, speed, etc.
 - Allow enabling/disabling specific metric subsystems (`temp`, etc.)
-- Implement better error handling
-   - Some modbus read functions don't even return errors, but simply return "Error" string values, "-255" number values, crash with `os.Exit(4)`, or do nothing)
-	 - The lowest-level read functions for Modbus in `systemairmodbus/readRegisters.go` crash the app on any error
 - Implement structured logging
 - Expand functionality to include write capabilities (I want to enable refresh mode based on external decisions)
-- Expand functionality to include metrics monitoring and auto-enable refresh mode when a spike in humidity is detected
