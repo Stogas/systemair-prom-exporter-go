@@ -105,13 +105,12 @@ func wrapModbusWriteError(err error) error {
 }
 
 func isModbusWriteError(err error) bool {
-	var writeErr modbusWriteError
-	return errors.As(err, &writeErr)
+	_, ok := errors.AsType[modbusWriteError](err)
+	return ok
 }
 
 func unwrapModbusWriteError(err error) error {
-	var writeErr modbusWriteError
-	if errors.As(err, &writeErr) {
+	if writeErr, ok := errors.AsType[modbusWriteError](err); ok {
 		return writeErr.cause
 	}
 	return err

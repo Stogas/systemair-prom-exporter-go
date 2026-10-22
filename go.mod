@@ -1,10 +1,11 @@
 module github.com/Stogas/systemair-prom-exporter-go
 
-go 1.26.6
+go 1.27.3
 
-require github.com/simonvetter/modbus v1.6.3
-
-require github.com/prometheus/client_golang v1.23.2
+require (
+	github.com/prometheus/client_golang v1.23.2
+	github.com/simonvetter/modbus v1.6.3
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
